@@ -1,0 +1,11 @@
+# PyCharm
+.idea/
+
+# Python
+*.py[co]
+venv/
+
+# Pip
+cp_tools_console.egg-info/
+build/
+dist/
