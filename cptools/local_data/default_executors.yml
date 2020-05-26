@@ -1,22 +1,22 @@
 - cpp:
     ext: ['cpp', 'cxx', 'cc']
     compiled:
-      compile_command: 'g++ -O0 -DLOCAL -o %o %i'
-      executable_format: 'prog'
-    run_command: './%f'
+      command: ['g++', '-O0', '-DLOCAL', '-o', '%n', '%n']
+      exe_format: 'prog'
+    command: ['./%p']
 - cpp-fast:
     ext: ['cpp', 'cxx', 'cc']
     compiled:
-      compile_command: 'g++ -O2 -DLOCAL -o %o %i'
-      executable_format: 'prog'
-    run_command: './%f'
+      command: ['g++', '-O2', '-DLOCAL', '-o', '%n', '%n']
+      exe_format: 'prog'
+    command: ['./%p']
 - cpp-debug:
     ext: ['cpp', 'cxx', 'cc']
     compiled:
-      compile_command: 'g++ -o -Wall -Wshift-overflow=2 -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -D_FORTIFY_SOURCE=2 -fsanitize=address -fsanitize=undefined -fno-sanitize-recover -fstack-protector -o %o %i'
-      executable_format: 'prog'
-    run_command: './%f'
+      command: ['g++', '-Wall', '-Wshift-overflow=2', '-D_GLIBCXX_DEBUG', '-D_GLIBCXX_DEBUG_PEDANTIC', '-D_FORTIFY_SOURCE=2', '-fsanitize=address', '-fsanitize=undefined', '-fno-sanitize-recover', '-fstack-protector', '-o', '%n', '%n']
+      exe_format: 'prog'
+    command: ['./%p']
 - py:
     ext: ['py']
-    run_command: 'python3 %f'
+    command: ['python3', '%p']
 
