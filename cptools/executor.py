@@ -2,20 +2,17 @@ import time
 import os
 import subprocess as sub
 
-from cptools.local_data.data import get_option
+from cptools.data import get_option, get_executors_list, get_executor
 
 
-def sub_placeholders(arguments, sub_path):
-    sub_name = os.path.splitext(sub_path)[0]
-    res = []
-    for x in arguments:
-        if x == '%n':
-            res.append(sub_name)
-        elif x == '%p':
-            res.append(sub_path)
-        else:
-            res.append(x)
-    return res
+# Returns None if no executor was found
+def default_executor_name(src_path):
+    ext = os.path.splitext(src_path)[1][1:]  # Remove the dot
+    for exc_name in get_executors_list():
+        exc = get_executor(exc_name)
+        if ext in exc['ext']:
+            return exc_name
+    return None
 
 
 class Executor:
@@ -25,14 +22,21 @@ class Executor:
 
         self.exec_file, self.setup_passed = None, False
 
+    def _sub_placeholders(self, fmt_str):
+        return fmt_str.format(
+            src_path=self.src_file,
+            src_name=os.path.splitext(self.src_file)[0],
+            exe_path=self.exec_file
+        )
+
     def setup(self):
         """
         Does any necessary compilation processes
         """
 
         if 'compiled' in self.executor_info:
-            self.exec_file = sub_placeholders([self.executor_info['compiled']['exe_format']], self.src_file)[0]
-            sub.call(sub_placeholders(self.executor_info['compiled']['command'], self.src_file))
+            self.exec_file = self._sub_placeholders(self.executor_info['compiled']['exe_format'])[0]
+            sub.call(self._sub_placeholders(self.executor_info['compiled']['command']))
             if not os.path.exists(self.exec_file):
                 self.setup_passed = False
         else:

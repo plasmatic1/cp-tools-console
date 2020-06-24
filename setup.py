@@ -1,12 +1,24 @@
+import string
 import os
 import setuptools
 from setuptools import setup
+
+
+# Removes non-printable ASCII characters
+def fix(s):
+    res = ''
+    for ch in s:
+        if ch in string.printable:
+            res += ch
+    return res
+
 
 # Getting dependencies
 requirements_path = os.path.dirname(os.path.realpath(__file__)) + '/requirements.txt'
 assert os.path.isfile(requirements_path)
 with open(requirements_path) as f:
-    install_requires = f.readlines()
+    # Windows doesn't want to read files properly for some reason
+    install_requires = list(filter(lambda x: len(x) > 0, map(lambda x: fix(x).strip(), f.readlines())))
 
 setup(
     name='cp-tools-console',
@@ -24,7 +36,12 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'cpr = cptools.scripts.run:main'
+            'cpr = cptools.scripts.run:main',
+            'cprun = cptools.scripts.run:main',
+            'cptools-run = cptools.scripts.run:main',
+
+            'cpserv = cptools.scripts.companion_listener:main',
+            'cptools-companion-server = cptools.scripts.companion_listener:main'
         ]
     }
 )

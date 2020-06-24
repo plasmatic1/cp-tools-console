@@ -1,5 +1,6 @@
 import os
 import yaml
+from collections import namedtuple
 from pkg_resources import resource_string
 
 DEFAULT_CONFIG_PATH = 'cptools.local_data', 'default_config.yml'
@@ -10,6 +11,9 @@ CONFIG_PATH = f'{DATA_DIR}/config.yml'
 EXECUTORS_PATH = f'{DATA_DIR}/executors.yml'
 RESULTS_LIST_PATH = f'{DATA_DIR}/results_list.yml'
 RESULTS_DIR = f'{DATA_DIR}/results'
+
+Result = namedtuple('Result', 'id src_name input_name checker cases')
+Case = namedtuple('Case', 'in out expected_out err')
 
 
 def reset_config(force=False):
@@ -50,17 +54,24 @@ def reset_all(force=False):
     reset_results(force)
 
 
-def get_option(key):
+def get_config():
     """
-    Returns the value of the config option specified by key.  Nested options should be separated by periods
-    :param key: The config key.  Note that the correctness of key is not checked for.
-    :return: The value of the config option
+    Returns the entire config file as a dict
     """
 
     __verify_folder_exists()
     reset_config(False)
     with open(CONFIG_PATH) as f:
-        config = yaml.unsafe_load(f)
+        return yaml.unsafe_load(f)
+
+
+def get_option(key):
+    """
+    Returns the value of the config option specified by key.  Nested options should be separated by periods
+    :param key: The config key.  Note that the correctness of key is not checked for.
+    """
+
+    config = get_config()
     for part in key.split('.'):
         if part not in config:
             raise ValueError(f'Invalid config option {key}')
@@ -83,6 +94,17 @@ def get_executor(name):
         return executors[name]
 
 
+def get_executors_list():
+    """
+    Returns a list of all executors
+    """
+
+    __verify_folder_exists()
+    reset_executors(False)
+    with open(EXECUTORS_PATH) as f:
+        return yaml.unsafe_load(f.read()).keys()
+
+
 def get_result_list():
     """
     Returns a list of currently saved execution results
@@ -103,11 +125,29 @@ def get_result(result_id):
     __verify_folder_exists()
     reset_results(False)
     with open(RESULTS_LIST_PATH) as f:
-        results_info = yaml.unsafe_load(f.read())
+        results_info = yaml.full_load(f.read())
         if result_id not in results_info:
             raise ValueError(f'Invalid result id {result_id}')
         with open(results_info[result_id]['path']) as ff:
             return yaml.full_load(ff.read())  # Since its auto generated loading unsafe is not needed
 
 
-def add_result(result_id, src_name, result_obj
+def add_result(result_obj: Result):
+    """
+    Adds a result to the results file
+    :param result_obj: The result object to add
+    """
+
+    __verify_folder_exists()
+    reset_results(False)
+    path = f'{RESULTS_DIR}/{result_obj.id}.yml'
+    with open(RESULTS_LIST_PATH) as f:
+        result_list = yaml.full_load(f.read())
+    result_list.append({
+        'path': path,
+        'src_name': result_obj.src_name,
+        'input_name': result_obj.input_name
+    })
+    with open(path, 'w') as f:
+        f.write(yaml.dump(result_list))
+

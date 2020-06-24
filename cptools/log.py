@@ -1,23 +1,9 @@
-from colorama import init, Fore
-from datetime import datetime
+import coloredlogs
+
+LOG_FORMAT = '[%(asctime)s/%(name)s] %(levelname)s %(message)s'
+TIME_FORMAT = '%H:%M:%S'
 
 
 def init_log():
-    init(autoreset=True)
-
-
-def log(line, pref=''):
-    print(f'[{datetime.now().strftime("%H:%M:%S")}] {pref}{line}')
-
-
-def success(line):
-    log(line, Fore.GREEN)
-
-
-def error(line):
-    log(line, Fore.RED)
-
-
-def warn(line):
-    log(line, Fore.YELLOW)
+    coloredlogs.install(fmt=LOG_FORMAT, datefmt=TIME_FORMAT)
 
