@@ -22,12 +22,18 @@ class Executor:
 
         self.exec_file, self.setup_passed = None, False
 
-    def _sub_placeholders(self, fmt_str):
+    def _sub_placeholder(self, fmt_str):
         return fmt_str.format(
             src_path=self.src_file,
             src_name=os.path.splitext(self.src_file)[0],
             exe_path=self.exec_file
         )
+
+    def _sub_placeholder_list(self, fmt_list):
+        return [self._sub_placeholder(fmt_name) for fmt_name in fmt_list]
+
+    def is_compiled(self):
+        return 'compiled' in self.executor_info
 
     def setup(self):
         """
@@ -35,23 +41,24 @@ class Executor:
         """
 
         if 'compiled' in self.executor_info:
-            self.exec_file = self._sub_placeholders(self.executor_info['compiled']['exe_format'])[0]
-            sub.call(self._sub_placeholders(self.executor_info['compiled']['command']))
-            if not os.path.exists(self.exec_file):
-                self.setup_passed = False
+            self.exec_file = self._sub_placeholder(self.executor_info['compiled']['exe_format'])
+            sub.call(self._sub_placeholder_list(self.executor_info['compiled']['command']))
+            self.setup_passed = os.path.exists(self.exec_file)
         else:
             self.setup_passed = True
             self.exec_file = self.src_file
 
-    def run(self, input):
+    def run(self, input, command=None):
         """
         Runs the program
         :param input: stdin
+        :param command: The command to run (optional and generally only for internals)
         :return: Returns a tuple (CompletedProcess, execution_time)
         """
 
         start_time = time.time()
-        res = sub.run(self.executor_info['command'], text=True, input=input, stdout=sub.PIPE, stderr=sub.PIPE, timeout=float(get_option('timeout')))
+        res = sub.run(self._sub_placeholder_list(command or self.executor_info['command']), text=True, input=input,
+                      stdout=sub.PIPE, stderr=sub.PIPE, timeout=float(get_option('timeout')))
         return res, time.time() - start_time
 
     def cleanup(self):

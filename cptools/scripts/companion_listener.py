@@ -1,7 +1,8 @@
 import sys
 
-from ..log import init_log
+from cptools.log import init_log
 from http.server import HTTPServer, BaseHTTPRequestHandler
+from cptools.data import get_option
 import logging
 import json
 import os
@@ -53,7 +54,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             if is_linux:
                 f.write('#!cptools-run\n')
 
-            f.write('checker: default\n')
+            f.write(f'checker: {get_option("default_checker")}\n')
             f.write('cases:\n')
             for case in problem['tests']:
                 inp = case['input'] + ('\n' if case['input'][-1] != '\n' else '')
@@ -93,3 +94,4 @@ def main():
     logging.info(f'Starting HTTP server on port {port}...')
     server = HTTPServer(('localhost', port), RequestHandler)
     server.serve_forever()
+

@@ -13,19 +13,24 @@ RESULTS_LIST_PATH = f'{DATA_DIR}/results_list.yml'
 RESULTS_DIR = f'{DATA_DIR}/results'
 
 Result = namedtuple('Result', 'id src_name input_name checker cases')
-Case = namedtuple('Case', 'in out expected_out err')
+Case = namedtuple('Case', 'inp out expected_out err')
+
+
+# pkg_resources.resource_string but with some small fixes (such as removing \r)
+def get_resource_string_fix(*args):
+    return str(resource_string(*args), 'utf8').replace('\r', '')
 
 
 def reset_config(force=False):
     if force or not os.path.exists(CONFIG_PATH):
         with open(CONFIG_PATH, 'w') as f:
-            f.write(resource_string(*DEFAULT_CONFIG_PATH))
+            f.write(get_resource_string_fix(*DEFAULT_CONFIG_PATH))
 
 
 def reset_executors(force=False):
     if force or not os.path.exists(EXECUTORS_PATH):
         with open(EXECUTORS_PATH, 'w') as f:
-            f.write(resource_string(*DEFAULT_EXECUTORS_PATH))
+            f.write(get_resource_string_fix(*DEFAULT_EXECUTORS_PATH))
 
 
 def reset_results(force=False):

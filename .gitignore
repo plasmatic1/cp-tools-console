@@ -9,3 +9,8 @@ venv/
 cp_tools_console.egg-info/
 build/
 dist/
+
+# Local testing things
+.cptools/
+cptools/tests/.cptools
+
