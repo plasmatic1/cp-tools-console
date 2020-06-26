@@ -1,18 +1,30 @@
-import sys
-
-from cptools.log import init_log
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from cptools.data import get_option
-import logging
-import json
-import os
 import argparse
-import textwrap
-import stat
+import json
+import logging
+import os
 import string
+import sys
+import textwrap
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+from cptools.data import get_option
+from cptools.log import init_log
 
 # Default host ports: https://github.com/jmerle/competitive-companion/blob/master/src/hosts/hosts.ts
 DEFAULT_PORT = 4244  # It's the hightail port but whatever.  I asked jmerle and he said it was fine
+
+
+# dict of file ext -> comment prefix
+COMMENT_MAP = {
+    '.c': '//',
+    '.cpp': '//',
+    '.cxx': '//',
+    '.cc': '//',
+    '.java': '//',
+
+    '.py': '#',
+    '.rb': '#'
+}
 
 
 # Fixes a problem name
@@ -38,18 +50,22 @@ class RequestHandler(BaseHTTPRequestHandler):
         name = fix_name(problem['name'].strip())
         logging.info(f'Received problem "{name}" from {problem["group"]}.  Contains {len(problem["tests"])} sample cases')
 
+        self._set_response()
+        self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
+
         # Make name unique
+        src_lang = os.path.splitext(get_option('template_path'))[1]
+
         fname = name
         ctr = 1
-        while not fname or os.path.exists(fname):
+        while not fname or os.path.exists(fname + '.yml') or os.path.exists(fname + src_lang):
             fname = name + str(ctr)
             ctr += 1
-        fname += '.yml'
 
-        # Write file
+        # Write case file
         is_linux = sys.platform == 'linux' or sys.platform == 'linux2'
 
-        with open(fname, 'w') as f:  # Writing cases manually for a bit more flexibility when formatting YAML
+        with open(fname + '.yml', 'w') as f:  # Writing cases manually for a bit more flexibility when formatting YAML
             # Shebang
             if is_linux:
                 f.write('#!cptools-run\n')
@@ -65,12 +81,20 @@ class RequestHandler(BaseHTTPRequestHandler):
                 f.write('    out: |\n')
                 f.write(textwrap.indent(out, ' ' * 6))
 
-        # Attempt to chmod
         if is_linux:
-            os.chmod(fname, 0o777)  # Help
+            os.chmod(fname + '.yml', 0o777)  # Help
 
-        self._set_response()
-        self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
+        # Write source file
+        if not args.skip_source_file:
+            with open(fname + src_lang, 'w') as f:
+                # Some sort of indicator to denote the associated data file
+                f.write(f'{COMMENT_MAP[src_lang]} {fname}.yml\n')
+
+                with open(get_option('template_path')) as ff:
+                    f.write(ff.read().replace('\r', ''))
+
+            if is_linux:
+                os.chmod(fname + src_lang, 0o777)
 
     # Source: https://stackoverflow.com/questions/3389305/how-to-silent-quiet-httpserver-and-basichttprequesthandlers-stderr-output
     # Silences pesky log messages
@@ -81,6 +105,8 @@ class RequestHandler(BaseHTTPRequestHandler):
 parser = argparse.ArgumentParser()
 parser.add_argument('-p', '--port', help='Port to listen on (default 4244)',
                         type=int)
+parser.add_argument('-ss', '--skip-source-file', help='Don\'t autogenerate source file from template',
+                        action='store_true')
 args = parser.parse_args()
 
 

@@ -14,7 +14,8 @@ Arguments (both required and optional) can be seen by running `<command> --help`
 - `cptools-companion-server`
     - Aliases: `cpserv`
     - Opens a HTTP server to listen for requests from `competitive-companion`
-        - Automatically uses those to create sample files
+        - Automatically uses those to create data files for sample in/output along with source files from a template (optional)
+    - Note: If on linux, the companion listener also creates shebangs for both input and source files and `chmods`s them so that they are directly executable
 
 ## Stress Testing
 
@@ -88,7 +89,7 @@ use the `str.format` method with the following keyword substitutions.
             - `-l --list`: List all results stored
             - `-c --clear`: Clear previous results
             - `-i --id <id>`: ID
-- autogenerate files
+- autogenerating files (functionality already partially exits with the companion listener...)
     - i.e. Task files (A,B,C,D,...)
     - `cptools-make <name>`
         - Aliases: `cpmake`, `cpm`
