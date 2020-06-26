@@ -60,14 +60,14 @@ class RequestHandler(BaseHTTPRequestHandler):
                 inp = case['input'] + ('\n' if case['input'][-1] != '\n' else '')
                 out = case['output'] + ('\n' if case['output'][-1] != '\n' else '')
 
-                f.write('- in: |\n')
-                f.write(textwrap.indent(inp, ' ' * 4))
-                f.write('  out: |\n')
+                f.write('  - in: |\n')
+                f.write(textwrap.indent(inp, ' ' * 6))
+                f.write('    out: |\n')
                 f.write(textwrap.indent(out, ' ' * 6))
 
         # Attempt to chmod
         if is_linux:
-            os.chmod(fname, stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+            os.chmod(fname, 0o777)  # Help
 
         self._set_response()
         self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))

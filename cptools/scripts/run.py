@@ -111,7 +111,7 @@ def main():
 
         if not ac or args.list_all:
             if res.stderr:
-                print(f'== Errors ==\n{res.stderr}')
+                print(f'== Errors ==\n{Fore.LIGHTRED_EX + res.stderr + Style.RESET_ALL}')
             print(f'== Input ==\n{input}')
             print(f'== Output ==\n{res.stdout}')
             if output:
