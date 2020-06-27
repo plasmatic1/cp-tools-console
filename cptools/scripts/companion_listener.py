@@ -104,14 +104,16 @@ class RequestHandler(BaseHTTPRequestHandler):
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-p', '--port', help='Port to listen on (default 4244)',
-                        type=int)
+                    type=int)
 parser.add_argument('-ss', '--skip-source-file', help='Don\'t autogenerate source file from template',
-                        action='store_true')
+                    action='store_true')
+parser.add_argument('-v', '--verbose', help='Verbose mode: shows DEBUG level log messages',
+                    action='store_true')
 args = parser.parse_args()
 
 
 def main():
-    init_log()
+    init_log(args.verbose)
 
     logging.info('Started Competitive Companion Listener')
     logging.info(f'Files will be saved in {os.getcwd()}')

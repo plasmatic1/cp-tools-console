@@ -3,6 +3,7 @@ import os
 import argparse
 import logging
 import yaml
+import textwrap
 
 from cptools.checker import parse_checker
 from cptools.executor import Executor, default_executor_name
@@ -22,13 +23,15 @@ parser.add_argument('-o', '--only-case', help='Only run a single case', type=int
                     dest='only_case')
 parser.add_argument('-pwd', '--pause-when-done', help='Asks the user to press enter before terminating',
                     action='store_true')
+parser.add_argument('-v', '--verbose', help='Verbose mode: shows DEBUG level log messages',
+                    action='store_true')
 
 args = parser.parse_args()
 
 
 def main():
     colorama.init()
-    cptools_util.init_log()
+    cptools_util.init_log(args.verbose)
     cptools_util.init_exit(args.pause_when_done)
 
     cfg = data.get_config()
@@ -50,6 +53,7 @@ def main():
         cptools_util.exit()
 
     if exc.is_compiled():
+        logging.debug(f'Compile command: {exc.compile_command}')
         logging.info('Compiling...')
         exc.setup()
 
@@ -84,10 +88,12 @@ def main():
             cptools_util.exit()
         cases = cases[args.only_case]
 
+    char_limit = data.get_option('char_limit')
+    timeout = data.get_option('timeout')
+
     for ind, case in enumerate(cases):
         case_in = case['in']
         case_out = case['out']
-        timeout = data.get_option('timeout')
         res, elapsed, tle = exc.run(case_in)
 
         def print_verdict(verdict, verdict_clr, is_timeout=False, extra=''):
@@ -112,12 +118,15 @@ def main():
                 print_verdict('WA', Fore.LIGHTRED_EX, False, feedback_str)
 
         if not ac or args.list_all:
+            def print_stream(label, text, style_before='', style_after=Style.RESET_ALL):
+                print(f'== {label} ==\n{style_before}{cptools_util.truncate(text, char_limit)}{style_after}')
+
             if res.stderr:
-                print(f'== Errors ==\n{Fore.LIGHTRED_EX + res.stderr + Style.RESET_ALL}')
-            print(f'== Input ==\n{case_in}')
-            print(f'== Output ==\n{res.stdout}')
+                print_stream('Errors', res.stderr, Fore.LIGHTRED_EX)
+            print_stream('Input', case_in)
+            print_stream('Output', res.stdout)
             if case_out:
-                print(f'== Expected Output ==\n{case_out}')
+                print_stream('Expected Output', case_out)
 
     # Cleanup
     exc.cleanup()

@@ -22,6 +22,9 @@ class Executor:
 
         self.exec_file, self.setup_passed = None, False
 
+        # Auxillary info
+        self.compile_command = ' '.join(self.executor_info['compiled']['command'])
+
     def _sub_placeholder(self, fmt_str):
         return fmt_str.format(
             src_path=self.src_file,

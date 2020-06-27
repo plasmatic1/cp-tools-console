@@ -13,7 +13,11 @@ cpp-fast:
 cpp-debug:
   ext: ['cpp', 'cxx', 'cc']
   compiled:
-    command: ['g++', '-DLOCAL', '-Wall', '-Wshift-overflow=2', '-D_GLIBCXX_DEBUG', '-D_GLIBCXX_DEBUG_PEDANTIC', '-D_FORTIFY_SOURCE=2', '-fsanitize=address', '-fsanitize=undefined', '-fno-sanitize-recover', '-fstack-protector', '-o', '{exe_path}', '{src_path}']
+    command: ['g++', '-DLOCAL', '-O2', '-Wall', '-Wextra', '-pedantic', '-Wshadow', '-Wformat=2', '-Wfloat-equal',
+              '-Wconversion', '-Wlogical-op', '-Wshift-overflow=2', '-Wduplicated-cond', '-Wcast-qual', '-Wcast-align',
+              '-D_GLIBCXX_DEBUG', '-D_GLIBCXX_DEBUG_PEDANTIC', '-D_FORTIFY_SOURCE=2',
+              '-fsanitize=address', '-fsanitize=undefined', '-fno-sanitize-recover', '-fstack-protector',
+              '-o', '{exe_path}', '{src_path}']
     exe_format: '{src_name}.exe'
   command: ['./{exe_path}']
 py:
