@@ -1,5 +1,4 @@
 import cptools.data as data
-import sys
 import os
 import argparse
 import logging
@@ -9,7 +8,7 @@ from cptools.checker import parse_checker
 from cptools.executor import Executor, default_executor_name
 from colorama import Style, Fore
 import colorama
-import cptools.log as cptools_log
+import cptools.util as cptools_util
 
 parser = argparse.ArgumentParser(description='Compiles and executes a source file on a set of cases')
 parser.add_argument('data_file', type=str, help='The test cases to run the executable on')
@@ -19,7 +18,7 @@ parser.add_argument('-e', '--executor', type=str, help='The executor to use (wil
                     choices=data.get_executors_list())
 parser.add_argument('-a', '--list-all', help='Always display output, even if the case was correct', action='store_true',
                     dest='list_all')
-parser.add_argument('-c', '--only-case', help='Only run a single case', type=int,
+parser.add_argument('-o', '--only-case', help='Only run a single case', type=int,
                     dest='only_case')
 parser.add_argument('-pwd', '--pause-when-done', help='Asks the user to press enter before terminating',
                     action='store_true')
@@ -29,7 +28,8 @@ args = parser.parse_args()
 
 def main():
     colorama.init()
-    cptools_log.init_log()
+    cptools_util.init_log()
+    cptools_util.init_exit(args.pause_when_done)
 
     cfg = data.get_config()
 
@@ -47,7 +47,7 @@ def main():
 
     if not os.path.exists(args.src_file):
         logging.error('Source file does not exist!')
-        sys.exit(-1)
+        cptools_util.exit()
 
     if exc.is_compiled():
         logging.info('Compiling...')
@@ -55,18 +55,14 @@ def main():
 
     if not exc.setup_passed:
         logging.error('Compile failed!')
-
-        if args.pause_when_done:
-            input('\nPress ENTER to continue...')
-
-        sys.exit(-1)
+        cptools_util.exit()
 
     # Load data
     logging.info('Loading test data...')
 
     if not os.path.exists(args.data_file):
         logging.error('Data file does not exist!')
-        sys.exit(-1)
+        cptools_util.exit()
 
     with open(args.data_file) as f:
         tests = yaml.unsafe_load(f.read())
@@ -85,7 +81,7 @@ def main():
     if args.only_case:
         if args.only_case >= len(cases):
             logging.error('Case index out of range!')
-            sys.exit(-1)
+            cptools_util.exit()
         cases = cases[args.only_case]
 
     for ind, case in enumerate(cases):
@@ -125,7 +121,4 @@ def main():
 
     # Cleanup
     exc.cleanup()
-
-    if args.pause_when_done:
-        input('\nPress ENTER to continue...')
-
+    cptools_util.exit(0)

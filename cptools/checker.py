@@ -1,5 +1,6 @@
 import logging
 import sys
+import cptools.util as util
 
 import cptools.data as data
 from cptools.executor import Executor, default_executor_name
@@ -55,14 +56,18 @@ class CustomChecker(Checker):
             self.exc.setup()
         if not self.exc.setup_passed:
             logging.error('Checker compile failed!')
-            sys.exit(-1)
+            util.exit()
 
     def _check(self, input, expected, output):
-        res, _ = self.exc.run('', self.exc.executor_info['command'] + [input, expected, output])
-        if res.returncode or res.stderr:
+        res, _, tle = self.exc.run('', self.exc.executor_info['command'] + [input, expected, output])
+
+        if tle:
+            logging.error(f'Checker timed out')
+            util.exit()
+        elif res.returncode or res.stderr:
             logging.error(f'Checker encountered runtime error (exit code: {res.returncode})')
             logging.error(f'STDERR info: {res.stderr}')
-            sys.exit(-1)
+            util.exit()
 
         if res.stdout != 'OK':
             return res.stdout
