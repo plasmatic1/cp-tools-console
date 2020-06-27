@@ -91,6 +91,8 @@ def main():
     char_limit = data.get_option('char_limit')
     timeout = data.get_option('timeout')
 
+    print()  # For formatting
+
     for ind, case in enumerate(cases):
         case_in = case['in']
         case_out = case['out']
