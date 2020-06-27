@@ -53,13 +53,16 @@ class Executor:
         Runs the program
         :param input: stdin
         :param command: The command to run (optional and generally only for internals)
-        :return: Returns a tuple (CompletedProcess, execution_time)
+        :return: Returns a tuple (CompletedProcess, execution_time, TLE)
         """
 
         start_time = time.time()
-        res = sub.run(self._sub_placeholder_list(command or self.executor_info['command']), text=True, input=input,
-                      stdout=sub.PIPE, stderr=sub.PIPE, timeout=float(get_option('timeout')))
-        return res, time.time() - start_time
+        try:
+            res = sub.run(self._sub_placeholder_list(command or self.executor_info['command']), text=True, input=input,
+                          stdout=sub.PIPE, stderr=sub.PIPE, timeout=float(get_option('timeout')))
+            return res, time.time() - start_time, False
+        except sub.TimeoutExpired as e:
+            return sub.CompletedProcess([], -1, e.stdout, e.stderr), time.time() - start_time, True
 
     def cleanup(self):
         """

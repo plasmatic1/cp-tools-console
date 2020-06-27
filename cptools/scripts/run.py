@@ -21,6 +21,8 @@ parser.add_argument('-a', '--list-all', help='Always display output, even if the
                     dest='list_all')
 parser.add_argument('-c', '--only-case', help='Only run a single case', type=int,
                     dest='only_case')
+parser.add_argument('-pwd', '--pause-when-done', help='Asks the user to press enter before terminating',
+                    action='store_true')
 
 args = parser.parse_args()
 
@@ -53,6 +55,10 @@ def main():
 
     if not exc.setup_passed:
         logging.error('Compile failed!')
+
+        if args.pause_when_done:
+            input('\nPress ENTER to continue...')
+
         sys.exit(-1)
 
     # Load data
@@ -83,26 +89,26 @@ def main():
         cases = cases[args.only_case]
 
     for ind, case in enumerate(cases):
-        input = case['in']
-        output = case['out']
+        case_in = case['in']
+        case_out = case['out']
         timeout = data.get_option('timeout')
-        res, elapsed = exc.run(input)
+        res, elapsed, tle = exc.run(case_in)
 
         def print_verdict(verdict, verdict_clr, is_timeout=False, extra=''):
             elapsed_str = f'[>{timeout:.3f}s]' if is_timeout else f'[{elapsed:.3f}s]'
             print(f'{Style.BRIGHT}Case #{ind}: {verdict_clr}{verdict}{Style.RESET_ALL + Style.BRIGHT} {extra}{elapsed_str}{Style.RESET_ALL}')
 
-        if res.stderr or res.returncode:
-            print_verdict('RTE', Fore.YELLOW, False, f'(Exit Code: {res.returncode}) ')
-            ac = False
-        elif elapsed > timeout:
+        if tle:
             print_verdict('TLE', Style.DIM + Fore.WHITE, True)
             ac = False
+        elif res.stderr or res.returncode:
+            print_verdict('RTE', Fore.YELLOW, False, f'(Exit Code: {res.returncode}) ')
+            ac = False
         else:
-            if not output and not tests['checker'].startswith('custom'):
+            if not case_out and not tests['checker'].startswith('custom'):
                 ac, feedback = True, ''
             else:
-                ac, feedback = checker.check(input, output, res.stdout)
+                ac, feedback = checker.check(case_in, case_out, res.stdout)
             if ac:
                 print_verdict('AC', Fore.LIGHTGREEN_EX)
             else:
@@ -112,11 +118,14 @@ def main():
         if not ac or args.list_all:
             if res.stderr:
                 print(f'== Errors ==\n{Fore.LIGHTRED_EX + res.stderr + Style.RESET_ALL}')
-            print(f'== Input ==\n{input}')
+            print(f'== Input ==\n{case_in}')
             print(f'== Output ==\n{res.stdout}')
-            if output:
-                print(f'== Expected Output ==\n{output}')
+            if case_out:
+                print(f'== Expected Output ==\n{case_out}')
 
     # Cleanup
     exc.cleanup()
+
+    if args.pause_when_done:
+        input('\nPress ENTER to continue...')
 
