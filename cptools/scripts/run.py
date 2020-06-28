@@ -1,15 +1,15 @@
-import cptools.data as data
-import os
 import argparse
 import logging
-import yaml
-import textwrap
+import os
 
+import colorama
+import yaml
+from colorama import Style, Fore
+
+import cptools.data as data
+import cptools.util as cptools_util
 from cptools.checker import parse_checker
 from cptools.executor import Executor, default_executor_name
-from colorama import Style, Fore
-import colorama
-import cptools.util as cptools_util
 
 parser = argparse.ArgumentParser(description='Compiles and executes a source file on a set of cases')
 parser.add_argument('data_file', type=str, help='The test cases to run the executable on')
@@ -46,7 +46,11 @@ def main():
     logging.debug('')
 
     # Compile
-    exc = Executor(args.src_file, data.get_executor(exc_name))
+    try:
+        exc = Executor(args.src_file, data.get_executor(exc_name))
+    except ValueError as e:
+        logging.error(e)
+        cptools_util.exit()
 
     if not os.path.exists(args.src_file):
         logging.error('Source file does not exist!')
@@ -55,7 +59,7 @@ def main():
     if exc.is_compiled():
         logging.debug(f'Compile command: {exc.compile_command}')
         logging.info('Compiling...')
-        exc.setup()
+    exc.setup()
 
     if not exc.setup_passed:
         logging.error('Compile failed!')
@@ -68,14 +72,18 @@ def main():
         logging.error('Data file does not exist!')
         cptools_util.exit()
 
-    with open(args.data_file) as f:
-        tests = yaml.unsafe_load(f.read())
-        cases = tests['cases']
-        for i in range(len(cases)):
-            if cases[i]['in'][-1] != '\n':
-                cases[i]['in'] += '\n'
-            if cases[i]['out'][-1] != '\n':
-                cases[i]['out'] += '\n'
+    try:
+        with open(args.data_file) as f:
+            tests = yaml.unsafe_load(f.read())
+            cases = tests['cases']
+            for i in range(len(cases)):
+                if cases[i]['in'][-1] != '\n':
+                    cases[i]['in'] += '\n'
+                if cases[i]['out'][-1] != '\n':
+                    cases[i]['out'] += '\n'
+    except KeyError or IndexError:
+        logging.error(f'Malformed test data. {Fore.RED}', exc_info=True)
+        cptools_util.exit()
 
     # Checker
     checker = parse_checker(tests['checker'])
@@ -96,7 +104,14 @@ def main():
     for ind, case in enumerate(cases):
         case_in = case['in']
         case_out = case['out']
-        res, elapsed, tle = exc.run(case_in)
+        try:
+            res, elapsed, tle = exc.run(case_in)
+        except UnicodeEncodeError:
+            logging.error('Invalid character in Input', exc_info=True)
+            cptools_util.exit()
+        except UnicodeDecodeError:
+            logging.error('Invalid character in Output', exc_info=True)
+            cptools_util.exit()
 
         def print_verdict(verdict, verdict_clr, is_timeout=False, extra=''):
             elapsed_str = f'[>{timeout:.3f}s]' if is_timeout else f'[{elapsed:.3f}s]'

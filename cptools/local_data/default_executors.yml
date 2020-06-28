@@ -23,4 +23,3 @@ cpp-debug:
 py:
   ext: ['py']
   command: ['python3', '{src_path}']
-

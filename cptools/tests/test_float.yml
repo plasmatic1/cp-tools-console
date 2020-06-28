@@ -1,0 +1,14 @@
+checker: "float:1e-2"
+cases:
+  - in: |
+      2 0.01
+    out: |
+      2
+  - in: |
+      3 0.1
+    out: |
+      3
+  - in: |
+      3 1
+    out: |
+      3

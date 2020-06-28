@@ -24,6 +24,7 @@ setup(
     name='cp-tools-console',
     version='1.0.0',
     install_requires=install_requires,
+    python_requires='>=3.7',
     packages=setuptools.find_packages('cptools.*', exclude='cptools.tests.*'),
     url='',
     license='GPL 3.0',
@@ -41,7 +42,11 @@ setup(
             'cptools-run = cptools.scripts.run:main',
 
             'cpserv = cptools.scripts.companion_listener:main',
-            'cptools-companion-server = cptools.scripts.companion_listener:main'
+            'cptools-companion-server = cptools.scripts.companion_listener:main',
+            
+            'cps = cptools.scripts.stress:main',
+            'cpstress = cptools.scripts.stress:main',
+            'cptools-stress-test = cptools.scripts.stress:main',
         ]
     }
 )

@@ -23,7 +23,10 @@ class Executor:
         self.exec_file, self.setup_passed = None, False
 
         # Auxillary info
-        self.compile_command = ' '.join(self.executor_info['compiled']['command'])
+        if self.is_compiled():
+            self.compile_command = ' '.join(self.executor_info['compiled']['command'])
+        else:
+            self.compile_command = None
 
     def _sub_placeholder(self, fmt_str):
         return fmt_str.format(
@@ -43,7 +46,7 @@ class Executor:
         Does any necessary compilation processes
         """
 
-        if 'compiled' in self.executor_info:
+        if self.is_compiled():
             self.exec_file = self._sub_placeholder(self.executor_info['compiled']['exe_format'])
             sub.call(self._sub_placeholder_list(self.executor_info['compiled']['command']))
             self.setup_passed = os.path.exists(self.exec_file)

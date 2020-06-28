@@ -7,6 +7,9 @@ from cptools.executor import Executor, default_executor_name
 
 
 class Checker:
+    def __init__(self, *_):
+        pass
+
     def setup(self):
         pass
 
@@ -36,11 +39,11 @@ class TokensChecker(Checker):
 
 class FloatChecker(Checker):
     def __init__(self, eps):
-        self.eps = eps
+        self.eps = float(eps)
 
     def _check(self, _, expected, output):
         try:
-            return all(map(lambda tup: abs(tup[0] - tup[1]) < self.eps, zip(expected.split(), output.split()))) or None
+            return all(map(lambda tup: abs(float(tup[0]) - float(tup[1])) < self.eps, zip(expected.split(), output.split())))
         except ValueError as e:
             return str(e)
 
@@ -95,4 +98,4 @@ def parse_checker(checker_str):
         logging.error(f'Must be one of the following: {CHECKERS.keys()}')
         sys.exit(-1)
 
-    return CHECKERS[c_type](*c_arg)
+    return CHECKERS[c_type](c_arg)

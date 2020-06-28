@@ -4,6 +4,40 @@
 
 Run `python3 setup.py develop` to install the module in development mode.
 
+Module currently supports `>=Python 3.7` on both Windows and Linux based systems.  However, module has not been tested with `Python 3.8` yet.
+
+# General Workflow
+
+Test data is stored in `.yml` files, which can be easily modified to add/remove test cases.  Example:
+
+```
+checker: tokens
+cases:
+  - in: |
+      5 5
+      1 3 -8 -2 4
+    out: |
+      8
+  - in: |
+      6 2
+      0 1 8 1 5 5
+    out: |
+      10
+```
+
+For the checker field, the currently available checkers are:
+
+- `identical`: Identical
+- `tokens` (the default): Compares tokenized versions of the expected and actual outputs
+- `float:<eps>`: Tokenizes the strings, and then attempts to convert them to floating-point numbers and compare them with a given epsilon value.  Example: `float:1e-4`
+- `custom:<path_to_source>`: Custom checker that allows the use of custom code to check the solution.  Path should be absolute
+or relative to the current working directory.  File extension should be supported by an executor (i.e. `.cpp` files are supported by default)
+    - Custom checker programs will be passed the input in `argv[1]`, the expected output in `argv[2]`, and the actual output in
+    `argv[3]`
+
+
+
+
 # Basic Commands
 
 Arguments (both required and optional) can be seen by running `<command> --help`

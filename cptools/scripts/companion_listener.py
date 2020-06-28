@@ -86,15 +86,18 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         # Write source file
         if not args.skip_source_file:
-            with open(fname + src_lang, 'w') as f:
-                # Some sort of indicator to denote the associated data file
-                f.write(f'{COMMENT_MAP[src_lang]} {fname}.yml\n')
+            if not os.path.exists(get_option('template_path')):
+                logging.warning('Template file does not exist.  Skipping generation of source file')
+            else:
+                with open(fname + src_lang, 'w') as f:
+                    # Some sort of indicator to denote the associated data file
+                    f.write(f'{COMMENT_MAP[src_lang]} {fname}.yml\n')
 
-                with open(get_option('template_path')) as ff:
-                    f.write(ff.read().replace('\r', ''))
+                    with open(get_option('template_path')) as ff:
+                        f.write(ff.read().replace('\r', ''))
 
-            if is_linux:
-                os.chmod(fname + src_lang, 0o777)
+                if is_linux:
+                    os.chmod(fname + src_lang, 0o777)
 
     # Source: https://stackoverflow.com/questions/3389305/how-to-silent-quiet-httpserver-and-basichttprequesthandlers-stderr-output
     # Silences pesky log messages
