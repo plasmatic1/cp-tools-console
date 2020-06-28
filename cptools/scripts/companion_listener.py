@@ -7,6 +7,8 @@ import sys
 import textwrap
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
+import colorama
+
 from cptools.data import get_option
 from cptools.util import init_log
 
@@ -120,6 +122,7 @@ args = parser.parse_args()
 
 
 def main():
+    colorama.init()
     init_log(args.verbose)
 
     logging.info('Started Competitive Companion Listener')

@@ -33,7 +33,7 @@ setup(
     description='Competitive Programming Tools- in console form',
 
     package_data={
-        '': '*.yml'
+        '': ['*.yml']
     },
     entry_points={
         'console_scripts': [
