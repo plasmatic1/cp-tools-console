@@ -12,7 +12,7 @@ from cptools.checker import parse_checker
 from cptools.executor import Executor, default_executor_name
 
 parser = argparse.ArgumentParser(description='Compiles and executes a source file on a set of cases')
-parser.add_argument('data_file', type=str, help='The test cases to run the executable on')
+parser.add_argument('data_file', type=str, help='The test cases, as a .yml file')
 parser.add_argument('src_file', type=str, help='The source file to use')
 parser.add_argument('-e', '--executor', type=str, help='The executor to use (will use first listed available executor '
                                                        'for the file extension if this option is not specified)',

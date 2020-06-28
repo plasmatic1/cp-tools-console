@@ -72,6 +72,7 @@ class CustomChecker(Checker):
             logging.error(f'STDERR info: {res.stderr}')
             util.exit()
 
+        res.stdout = res.stdout.strip()
         if res.stdout != 'OK':
             return res.stdout
         else:
@@ -96,6 +97,6 @@ def parse_checker(checker_str):
     if c_type not in CHECKERS:
         logging.error(f'Invalid checker type {c_type}')
         logging.error(f'Must be one of the following: {CHECKERS.keys()}')
-        sys.exit(-1)
+        util.exit()
 
     return CHECKERS[c_type](c_arg)

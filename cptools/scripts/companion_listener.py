@@ -105,7 +105,11 @@ class RequestHandler(BaseHTTPRequestHandler):
         return
 
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(description='Opens a HTTP server to listen for requests from competitive-companion, '
+                                             'automatically creating data files for sample cases along with a source '
+                                             'file from a template (optional).  Note: If on linux, shebangs for the '
+                                             'input files are added and they are `chmod`ed so that they are directly '
+                                             'executable')
 parser.add_argument('-p', '--port', help='Port to listen on (default 4244)',
                     type=int)
 parser.add_argument('-ss', '--skip-source-file', help='Don\'t autogenerate source file from template',
