@@ -44,15 +44,21 @@ class Executor:
     def setup(self):
         """
         Does any necessary compilation processes
+        :return: The compilation time (float) in seconds
         """
 
         if self.is_compiled():
             self.exec_file = self._sub_placeholder(self.executor_info['compiled']['exe_format'])
+            ctime = time.time()
             sub.call(self._sub_placeholder_list(self.executor_info['compiled']['command']))
+            elapsed = time.time() - ctime
             self.setup_passed = os.path.exists(self.exec_file)
         else:
             self.setup_passed = True
             self.exec_file = self.src_file
+            elapsed = -1
+
+        return elapsed
 
     def run(self, input, command=None):
         """

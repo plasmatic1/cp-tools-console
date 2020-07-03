@@ -59,7 +59,9 @@ def main():
     if exc.is_compiled():
         logging.debug(f'Compile command: {exc.compile_command}')
         logging.info('Compiling...')
-    exc.setup()
+    compile_time = exc.setup()
+    if exc.is_compiled():
+        logging.debug(f'Compile time: {compile_time:.3f}s')
 
     if not exc.setup_passed:
         logging.error('Compile failed!')
