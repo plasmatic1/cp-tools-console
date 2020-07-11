@@ -10,4 +10,7 @@ char_limit: 1000000
 default_checker: tokens
 
 # Path to the template file for generating source files as well as input files
-template_path: template.cpp
+template_path: .template.cpp
+
+# Path to save
+saved_files_dir: '.'

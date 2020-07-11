@@ -2,13 +2,13 @@ import time
 import os
 import subprocess as sub
 
-from cptools.data import get_option, get_executors_list, get_executor
+from cptools.data import get_option, get_executors, get_executor
 
 
 # Returns None if no executor was found
 def default_executor_name(src_path):
     ext = os.path.splitext(src_path)[1][1:]  # Remove the dot
-    for exc_name in get_executors_list():
+    for exc_name in get_executors():
         exc = get_executor(exc_name)
         if ext in exc['ext']:
             return exc_name
@@ -74,7 +74,10 @@ class Executor:
                           stdout=sub.PIPE, stderr=sub.PIPE, timeout=float(get_option('timeout')))
             return res, time.time() - start_time, False
         except sub.TimeoutExpired as e:
-            return sub.CompletedProcess([], -1, e.stdout, e.stderr), time.time() - start_time, True
+            # Sometimes returned as str, sometimes as bytes
+            stdout = str(e.stdout, 'utf8') if type(e.stdout) == bytes else e.stdout
+            stderr = str(e.stderr, 'utf8') if type(e.stderr) == bytes else e.stderr
+            return sub.CompletedProcess([], -1, stdout, stderr), time.time() - start_time, True
 
     def cleanup(self):
         """

@@ -2,7 +2,6 @@ import argparse
 import logging
 import os
 
-import colorama
 import yaml
 from colorama import Style, Fore
 
@@ -16,23 +15,17 @@ parser.add_argument('data_file', type=str, help='The test cases, as a .yml file'
 parser.add_argument('src_file', type=str, help='The source file to use')
 parser.add_argument('-e', '--executor', type=str, help='The executor to use (will use first listed available executor '
                                                        'for the file extension if this option is not specified)',
-                    choices=data.get_executors_list())
+                    choices=data.get_executors().keys())
 parser.add_argument('-a', '--list-all', help='Always display output, even if the case was correct', action='store_true',
                     dest='list_all')
 parser.add_argument('-o', '--only-case', help='Only run a single case', type=int,
                     dest='only_case')
-parser.add_argument('-pwd', '--pause-when-done', help='Asks the user to press enter before terminating',
-                    action='store_true')
-parser.add_argument('-v', '--verbose', help='Verbose mode: shows DEBUG level log messages',
-                    action='store_true')
-
-args = parser.parse_args()
 
 
 def main():
-    colorama.init()
-    cptools_util.init_log(args.verbose)
-    cptools_util.init_exit(args.pause_when_done)
+    cptools_util.init_common(parser)
+    args = parser.parse_args()
+    cptools_util.init_common_options(args, True)
 
     cfg = data.get_config()
 
@@ -77,6 +70,11 @@ def main():
     try:
         with open(args.data_file) as f:
             tests = yaml.unsafe_load(f.read())
+            msg = data.validate_data_object(tests)
+            if msg:
+                logging.error(f'Error while parsing data: {msg}')
+                cptools_util.exit()
+
             cases = tests['cases']
             for i in range(len(cases)):
                 if cases[i]['in'][-1] != '\n':
@@ -112,7 +110,7 @@ def main():
             logging.error('Invalid character in Input', exc_info=True)
             cptools_util.exit()
         except UnicodeDecodeError:
-            logging.error('Invalid character in Output', exc_info=True)
+            logging.error('Invalid character in Output/Error Stream', exc_info=True)
             cptools_util.exit()
 
         def print_verdict(verdict, verdict_clr, is_timeout=False, extra=''):

@@ -99,7 +99,7 @@ def get_executor(name):
         return executors[name]
 
 
-def get_executors_list():
+def get_executors():
     """
     Returns a list of all executors
     """
@@ -107,7 +107,7 @@ def get_executors_list():
     __verify_folder_exists()
     reset_executors(False)
     with open(EXECUTORS_PATH) as f:
-        return yaml.unsafe_load(f.read()).keys()
+        return yaml.unsafe_load(f.read())
 
 
 def get_result_list():
@@ -155,4 +155,97 @@ def add_result(result_obj: Result):
     })
     with open(path, 'w') as f:
         f.write(yaml.dump(result_list))
+
+
+"""
+VALIDATORS
+"""
+
+v_int = lambda x: type(x) == int, 'expected int'
+v_float = lambda x: type(x) == float, 'expected float'
+v_str = lambda x: type(x) == str, 'expected string'
+v_dict = lambda x: type(x) == dict, 'expected dict'
+v_list_str = lambda x: type(x) == list and all((type(xx) == str for xx in x)), 'expected list of strings'
+v_list_node = lambda x: type(x) == list and all((type(xx) == dict for xx in x)), 'expected list of dict'
+
+CONFIG_VALIDATORS = {
+    'timeout': v_float,
+    'char_limit': v_int,
+    'default_checker': v_str,  # Whether the checker string is valid is handled in checker.py :)
+    'template_path': v_str,
+    'saved_files_dir': v_str
+}
+
+
+def validate_keys(validator_dict, obj, pre=None):
+    pre = f'in path {pre} ' if pre else ''
+    for k, v in validator_dict.items():
+        fun, msg = v
+        if k not in obj:
+            return f'Config key {k} not found {pre}'
+        if not fun(obj[k]):
+            return f'Invalid value {obj[k]} for config key {k} {pre}({msg})'
+    return None
+
+
+def validate_config_object(obj):
+    """
+    Returns an error message if the config is invalid, and None otherwise
+    :param obj: The config object in question
+    """
+    return validate_keys(CONFIG_VALIDATORS, obj)
+
+
+EXECUTOR_VALIDATORS = {
+    'ext': v_list_str,
+    'command': v_list_str
+}
+
+COMPILED_EXECUTOR_VALIDATORS = {
+    'command': v_list_str,
+    'exe_format': v_str
+}
+
+
+def validate_executors_object(obj):
+    """
+    Returns an error message if the executor list is invalid, and None otherwise
+    :param obj: The executors object in question
+    """
+
+    for k, v in obj.items():
+        if not v_dict[0](v):
+            return f'Executor {k} not a node'
+        res_base = validate_keys(EXECUTOR_VALIDATORS, v, k)
+        if res_base: return res_base
+        if 'compiled' in v:
+            if not v_dict[0](v):
+                return f'Compiled key of executor {k} not a node'
+            res_base = validate_keys(COMPILED_EXECUTOR_VALIDATORS, v['compiled'], f'{k}.compiled')
+            if res_base: return res_base
+    return None
+
+
+DATA_VALIDATORS = {
+    'checker': v_str,  # Validity is checked when parsing string
+    'cases': v_list_node
+}
+
+CASE_VALIDATORS = {
+    'in': v_str,
+    'out': v_str
+}
+
+
+def validate_data_object(obj):
+    """
+    Returns an error message if the executor list is invalid, and None otherwise
+    :param obj: The executors object in question
+    """
+    res_base = validate_keys(DATA_VALIDATORS, obj)
+    if res_base: return res_base
+    for idx, node in enumerate(obj['cases']):
+        res_base = validate_keys(CASE_VALIDATORS, node, f'[{idx}]')
+        if res_base: return res_base
+    return None
 
