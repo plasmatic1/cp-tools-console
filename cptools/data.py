@@ -5,6 +5,7 @@ from pkg_resources import resource_string
 
 DEFAULT_CONFIG_PATH = 'cptools.local_data', 'default_config.yml'
 DEFAULT_EXECUTORS_PATH = 'cptools.local_data', 'default_executors.yml'
+DEFAULT_STRESS_TEST_PATH = 'cptools.local_data', 'default_stress_test.yml'
 
 DATA_DIR = '.cptools'
 CONFIG_PATH = f'{DATA_DIR}/config.yml'
@@ -19,6 +20,13 @@ Case = namedtuple('Case', 'inp out expected_out err')
 # pkg_resources.resource_string but with some small fixes (such as removing \r)
 def get_resource_string_fix(*args):
     return str(resource_string(*args), 'utf8').replace('\r', '')
+
+
+def get_default_stress_test_file():
+    """
+    Get the default content of the stress test file for cptools-stress-test --make-file
+    """
+    return get_resource_string_fix(*DEFAULT_STRESS_TEST_PATH)
 
 
 def reset_config(force=False):

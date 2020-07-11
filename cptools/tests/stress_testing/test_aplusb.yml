@@ -1,0 +1,6 @@
+checker: tokens
+executors:
+  generator: python
+  solution: python
+generator: generate.py
+solution: aplusb.py

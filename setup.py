@@ -30,7 +30,7 @@ setup(
     license='GPL 3.0',
     author='Plasmatic',
     author_email='',
-    description='Competitive Programming Tools- in console form',
+    description='Competitive Programming Tools-in console form',
 
     package_data={
         '': ['*.yml']
