@@ -16,10 +16,8 @@ parser.add_argument('src_file', type=str, help='The source file to use')
 parser.add_argument('-e', '--executor', type=str, help='The executor to use (will use first listed available executor '
                                                        'for the file extension if this option is not specified)',
                     choices=data.get_executors().keys())
-parser.add_argument('-a', '--list-all', help='Always display output, even if the case was correct', action='store_true',
-                    dest='list_all')
-parser.add_argument('-o', '--only-case', help='Only run a single case', type=int,
-                    dest='only_case')
+parser.add_argument('-a', '--list-all', help='Always display output, even if the case was correct', action='store_true')
+parser.add_argument('-o', '--only-case', help='Only run a single case', type=int)
 
 
 def main():
@@ -90,11 +88,12 @@ def main():
     checker.setup()
 
     # Run program
-    if args.only_case:
+    if args.only_case is not None:
         if args.only_case >= len(cases):
             logging.error('Case index out of range!')
             cptools_util.exit()
-        cases = cases[args.only_case]
+        cases = [cases[args.only_case]]
+        logging.warning(f'Only running case #{args.only_case}')
 
     char_limit = data.get_option('char_limit')
     timeout = data.get_option('timeout')

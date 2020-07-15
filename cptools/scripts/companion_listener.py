@@ -75,6 +75,11 @@ class RequestHandler(BaseHTTPRequestHandler):
 
             f.write(f'checker: {get_option("default_checker")}\n')
             f.write('cases:\n')
+
+            # Number of cases is 0
+            if len(problem['tests']) == 0:
+                problem['tests'].append({'input': 'foo', 'output': 'bar'})  # Any sample sequence
+
             for case in problem['tests']:
                 inp = case['input'] + ('\n' if case['input'][-1] != '\n' else '')
                 out = case['output'] + ('\n' if case['output'][-1] != '\n' else '')

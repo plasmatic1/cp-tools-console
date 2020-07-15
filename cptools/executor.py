@@ -75,8 +75,8 @@ class Executor:
             return res, time.time() - start_time, False
         except sub.TimeoutExpired as e:
             # Sometimes returned as str, sometimes as bytes
-            stdout = str(e.stdout, 'utf8') if type(e.stdout) == bytes else e.stdout
-            stderr = str(e.stderr, 'utf8') if type(e.stderr) == bytes else e.stderr
+            stdout = str(e.stdout, 'utf8') if type(e.stdout) == bytes else (e.stdout or '')  # If stream output is None
+            stderr = str(e.stderr, 'utf8') if type(e.stderr) == bytes else (e.stderr or '')  # "
             return sub.CompletedProcess([], -1, stdout, stderr), time.time() - start_time, True
 
     def cleanup(self):

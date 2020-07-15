@@ -172,6 +172,7 @@ VALIDATORS
 v_int = lambda x: type(x) == int, 'expected int'
 v_float = lambda x: type(x) == float, 'expected float'
 v_str = lambda x: type(x) == str, 'expected string'
+v_exist_file = lambda x: type(x) == str and os.path.exists(x), 'expected existing file path'
 v_dict = lambda x: type(x) == dict, 'expected dict'
 v_list_str = lambda x: type(x) == list and all((type(xx) == str for xx in x)), 'expected list of strings'
 v_list_node = lambda x: type(x) == list and all((type(xx) == dict for xx in x)), 'expected list of dict'
@@ -186,13 +187,13 @@ CONFIG_VALIDATORS = {
 
 
 def validate_keys(validator_dict, obj, pre=None):
-    pre = f'in path {pre} ' if pre else ''
+    pre = f'in path "{pre}" ' if pre else ''
     for k, v in validator_dict.items():
         fun, msg = v
         if k not in obj:
-            return f'Config key {k} not found {pre}'
+            return f'Config key "{k}"" not found {pre}'
         if not fun(obj[k]):
-            return f'Invalid value {obj[k]} for config key {k} {pre}({msg})'
+            return f'Invalid value "{obj[k]}" for config key "{k}" {pre}({msg})'
     return None
 
 
@@ -218,7 +219,7 @@ COMPILED_EXECUTOR_VALIDATORS = {
 def validate_executors_object(obj):
     """
     Returns an error message if the executor list is invalid, and None otherwise
-    :param obj: The executors object in question
+    :param obj: The object
     """
 
     for k, v in obj.items():
@@ -248,7 +249,7 @@ CASE_VALIDATORS = {
 def validate_data_object(obj):
     """
     Returns an error message if the executor list is invalid, and None otherwise
-    :param obj: The executors object in question
+    :param obj: The object
     """
     res_base = validate_keys(DATA_VALIDATORS, obj)
     if res_base: return res_base
@@ -256,4 +257,19 @@ def validate_data_object(obj):
         res_base = validate_keys(CASE_VALIDATORS, node, f'[{idx}]')
         if res_base: return res_base
     return None
+
+
+STRESS_TEST_VALIDATORS = {
+    'checker': v_str,
+    'generator': v_exist_file,
+    'solution': v_exist_file
+}
+
+
+def validate_stress_test_object(obj):
+    """
+    Returns an error message if the stress testing info object is invalid, and None otherwise
+    :param obj: The object
+    """
+    return validate_keys(STRESS_TEST_VALIDATORS, obj)
 

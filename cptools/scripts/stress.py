@@ -1,3 +1,5 @@
+import yaml
+import os
 import argparse
 import logging
 
@@ -11,6 +13,9 @@ parser.add_argument('-tg', '--test-generate', help='Run the generator ONLY (one 
                         action='store_true')
 parser.add_argument('-cl', '--case-limit', help='Only run CASE_LIMIT cases (normally, the stress-tester would keep '
                                                 'running until manually terminated (i.e. with Ctrl+C))', type=int)
+parser.add_argument('-sr', '--seed-rng', help='The case number will be passed as ARGV[1] to both the generator and '
+                                              'solution when they\'re run, allowing them to use a set seed for their '
+                                              'RNG', action='store_true')
 
 parser.add_argument('-mf', '--make-file', help='Generates an info_file for stress-testing (which can be configured to'
                                                'your needs).  No stress-testing will actually be done.  The path of the'
@@ -28,4 +33,24 @@ def main():
         with open(args.make_file, 'w') as f:
             f.write(data.get_default_stress_test_file())
     else:
-        pass
+        if not os.path.exists(args.info_file):
+            logging.error(f'Info file {args.info_file} does not exist!')
+            cptools_util.exit()
+
+        with open(args.info_file) as f:
+            info = yaml.unsafe_load(f.read())
+
+        msg = data.validate_stress_test_object(info)
+        if msg:
+            logging.error(f'Invalid info file: {msg}')
+            cptools_util.exit()
+
+        # Load things
+        gen_exe =
+
+        ctr = 0
+        case_limit = args.case_limit or -1
+        while ctr != case_limit:
+            ctr += 1
+
+        print(f'Done {case_limit} cases!')

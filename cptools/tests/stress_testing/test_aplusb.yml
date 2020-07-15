@@ -1,6 +1,13 @@
+#!cptools-stress-test
 checker: tokens
 executors:
   generator: python
   solution: python
 generator: generate.py
 solution: aplusb.py
+
+# The generator file should print the case input to STDOUT and the expected output to STDERR
+# The solution file should just be the solution to be tested
+
+# The executors.generator and executors.solution nodes are optional (only if you want to specify a custom executor
+# for the generator or solution
