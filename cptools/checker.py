@@ -56,7 +56,7 @@ class CustomChecker(Checker):
     def setup(self):
         if self.exc.is_compiled():
             logging.info('Compiling checker...')
-            self.exc.setup()
+        self.exc.setup()
         if not self.exc.setup_passed:
             logging.error('Checker compile failed!')
             util.exit()
@@ -64,10 +64,16 @@ class CustomChecker(Checker):
     def _check(self, input, expected, output):
         res, _, tle = self.exc.run('', self.exc.executor_info['command'] + [input, expected, output])
 
+        def log_case():
+            logging.error(f'Case Input (Debug): \n{input.strip()}')
+            logging.error(f'Case Output (Debug): \n{output.strip()}')
+
         if tle:
+            log_case()
             logging.error(f'Checker timed out')
             util.exit()
         elif res.returncode or res.stderr:
+            log_case()
             logging.error(f'Checker encountered runtime error (exit code: {res.returncode})')
             logging.error(f'STDERR info: {res.stderr}')
             util.exit()

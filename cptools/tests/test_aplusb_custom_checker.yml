@@ -1,0 +1,18 @@
+checker: custom:test_aplusb_check.py
+cases:
+  - in: |
+      3 4
+    out: |
+      7
+  - in: |
+      6 7
+    out: |
+      12
+  - in: |
+      3 5
+    out: |
+      8
+  - in: |
+      1 1
+    out: |
+      2
