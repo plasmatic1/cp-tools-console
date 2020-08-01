@@ -23,6 +23,7 @@ def write_cases_file(path, problem, checker=get_option("default_checker")):
         # Shebang
         if is_linux:
             f.write('#!cptools-run\n')
+            logging.debug('Linux machine detected: adding shebang to cases file...')
 
         f.write(f'checker: {checker}\n')
         f.write('cases:\n')
@@ -41,6 +42,7 @@ def write_cases_file(path, problem, checker=get_option("default_checker")):
             f.write(textwrap.indent(out, ' ' * 6))
     if is_linux:
         os.chmod(path, 0o777)  # Help
+        logging.debug('Linux machine detected: adding executable permission to cases file...')
 
 
 def try_write_source_file(fname, src_lang):
