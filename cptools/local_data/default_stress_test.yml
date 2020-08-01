@@ -1,6 +1,8 @@
-checker: tokens  # The checker to be used.  See README for more information
+checker: tokens
 executors:  # This node is optional.  The default executor for the file extension will be used if not specified
-  generator: python  # Both are optional
-  solution: python  # Both are optional
-generator: generate.py
-solution: aplusb.py
+  gen: python
+  slow: python
+  fast: python
+gen: generate.py
+slow: slow.py
+fast: fast.py

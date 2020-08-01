@@ -261,8 +261,8 @@ def validate_data_object(obj):
 
 STRESS_TEST_VALIDATORS = {
     'checker': v_str,
-    'generator': v_exist_file,
-    'solution': v_exist_file
+    'gen': v_exist_file,
+    'fast': v_exist_file
 }
 
 

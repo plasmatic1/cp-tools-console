@@ -5,6 +5,8 @@ import logging
 
 import cptools.util as cptools_util
 import cptools.data as data
+from cptools.checker import parse_checker
+from cptools.executor import compile_source_file
 
 parser = argparse.ArgumentParser(description='Stress-tests your solution using a generator and checker')
 
@@ -45,9 +47,24 @@ def main():
             logging.error(f'Invalid info file: {msg}')
             cptools_util.exit()
 
-        # Load things
-        gen_exe =
+        # Load generator, slow, and fast
+        executors_dict = info.get('executors', dict())
+        logging.info('Loading generator...')
+        gen_exc = compile_source_file(info['gen'], executors_dict.get('gen'))
+        if info.get('slow'):
+            logging.info('Loading reference (slow) solution...')
+            slow_exc = compile_source_file(info['slow'], executors_dict.get('slow'))
+        else:
+            logging.warning('No reference solution exists! Reference output will be taken from generator STDERR (Input will be from STDOUT)')
+            slow_exc = None
+        logging.info('Loading to be tested (fast) solution...')
+        fast_exc = compile_source_file(info['fast'], executors_dict.get('fast'))
 
+        # Load checker
+        checker = parse_checker(info['checker'])
+        checker.setup()
+
+        # Run stress test
         ctr = 0
         case_limit = args.case_limit or -1
         while ctr != case_limit:

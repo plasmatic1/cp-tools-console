@@ -1,6 +1,8 @@
+import logging
 import time
 import os
 import subprocess as sub
+import cptools.util as cptools_util
 
 from cptools.data import get_option, get_executors, get_executor
 
@@ -88,3 +90,40 @@ class Executor:
             if os.path.exists(self.exec_file):
                 os.remove(self.exec_file)
 
+
+def compile_source_file(src_file, executor=None):
+    """
+    Compiles a source file with the specified executor (if the language is compiled.  If it's interpreted then it simply returns the executor for the source file.
+    If any errors occur, they'll be printed to STDOUT and the process will be halted.  Note that if no executor is specified, then the default executor for the source
+    file will be used
+    :param src_file: The source file
+    :param executor: The executor, or None if the default executor for the source file should be used.
+    :return: The executor for the source file, with all setup processes (compilation) completed
+    """
+
+    exc_name = executor or default_executor_name(src_file)
+    logging.debug(f'Using executor {exc_name}')
+
+    # Compile
+    try:
+        exc = Executor(src_file, get_executor(exc_name))
+    except ValueError as e:
+        logging.error(e)
+        cptools_util.exit()
+
+    if not os.path.exists(src_file):
+        logging.error('Source file does not exist!')
+        cptools_util.exit()
+
+    if exc.is_compiled():
+        logging.debug(f'Compile command: {exc.compile_command}')
+        logging.info('Compiling...')
+    compile_time = exc.setup()
+    if exc.is_compiled():
+        logging.debug(f'Compile time: {compile_time:.3f}s')
+
+    if not exc.setup_passed:
+        logging.error('Compile failed!')
+        cptools_util.exit()
+
+    return exc

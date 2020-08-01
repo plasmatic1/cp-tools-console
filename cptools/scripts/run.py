@@ -8,7 +8,7 @@ from colorama import Style, Fore
 import cptools.data as data
 import cptools.util as cptools_util
 from cptools.checker import parse_checker
-from cptools.executor import Executor, default_executor_name
+from cptools.executor import Executor, default_executor_name, compile_source_file
 
 parser = argparse.ArgumentParser(description='Compiles and executes a source file on a set of cases')
 parser.add_argument('data_file', type=str, help='The test cases, as a .yml file')
@@ -32,31 +32,7 @@ def main():
     logging.debug(f'Timeout: {cfg["timeout"]}')
     logging.debug(f'Display Character Limit: {cfg["char_limit"]}')
 
-    exc_name = args.executor or default_executor_name(args.src_file)
-    logging.debug(f'Using executor {exc_name}')
-    logging.debug('')
-
-    # Compile
-    try:
-        exc = Executor(args.src_file, data.get_executor(exc_name))
-    except ValueError as e:
-        logging.error(e)
-        cptools_util.exit()
-
-    if not os.path.exists(args.src_file):
-        logging.error('Source file does not exist!')
-        cptools_util.exit()
-
-    if exc.is_compiled():
-        logging.debug(f'Compile command: {exc.compile_command}')
-        logging.info('Compiling...')
-    compile_time = exc.setup()
-    if exc.is_compiled():
-        logging.debug(f'Compile time: {compile_time:.3f}s')
-
-    if not exc.setup_passed:
-        logging.error('Compile failed!')
-        cptools_util.exit()
+    exc = compile_source_file(args.src_file, args.executor)
 
     # Load data
     logging.info('Loading test data...')
