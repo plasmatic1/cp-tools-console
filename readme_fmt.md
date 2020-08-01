@@ -57,6 +57,13 @@ Aliases: `cpserv`
 $$$cptools-companion-server info$$$
 ```
 
+## `cptools-make-file`
+Aliases: `cpm`
+
+```
+$$$cptools-make-file info$$$
+```
+
 ## Stress Testing
 
 Automatic stress-testing is also available with the ...

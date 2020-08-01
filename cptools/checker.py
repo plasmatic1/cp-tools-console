@@ -1,8 +1,7 @@
 import logging
-import sys
-import cptools.util as util
 
 import cptools.data as data
+import cptools.util as util
 from cptools.executor import Executor, default_executor_name
 
 

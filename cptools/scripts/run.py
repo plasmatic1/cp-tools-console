@@ -76,6 +76,7 @@ def main():
 
     print()  # For formatting
 
+    verdicts = []
     for ind, case in enumerate(cases):
         case_in = case['in']
         case_out = case['out']
@@ -95,9 +96,11 @@ def main():
         if tle:
             print_verdict('TLE', Style.DIM + Fore.WHITE, True)
             ac = False
+            verdicts.append(Style.DIM + Fore.WHITE + 't')
         elif res.stderr or res.returncode:
             print_verdict('RTE', Fore.YELLOW, False, f'(Exit Code: {res.returncode}) ')
             ac = False
+            verdicts.append(Fore.YELLOW + '!')
         else:
             if not case_out and not tests['checker'].startswith('custom'):
                 ac, feedback = True, ''
@@ -105,9 +108,11 @@ def main():
                 ac, feedback = checker.check(case_in, case_out, res.stdout)
             if ac:
                 print_verdict('AC', Fore.LIGHTGREEN_EX)
+                verdicts.append(Fore.LIGHTGREEN_EX + '*')
             else:
                 feedback_str = f'({feedback}) ' if feedback else ''
                 print_verdict('WA', Fore.LIGHTRED_EX, False, feedback_str)
+                verdicts.append(Fore.LIGHTRED_EX + 'x')
 
         if not ac or args.list_all:
             def print_stream(label, text, style_before='', style_after=Style.RESET_ALL):
@@ -119,6 +124,9 @@ def main():
             print_stream('Output', res.stdout)
             if case_out:
                 print_stream('Expected Output', case_out)
+
+    verdicts = [v + Style.RESET_ALL + Style.BRIGHT for v in verdicts]
+    print(f'Verdicts: [ {" ".join(verdicts)} ]')
 
     # Cleanup
     exc.cleanup()

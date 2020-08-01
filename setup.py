@@ -48,7 +48,7 @@ setup(
             'cpstress = cptools.scripts.stress:main',
             'cptools-stress-test = cptools.scripts.stress:main',
 
-            'cpmf = cptools.scripts.make_tester:main',
+            'cpm = cptools.scripts.make_tester:main',
             'cptools-make-file = cptools.scripts.make_tester:main',
         ]
     }

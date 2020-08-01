@@ -27,7 +27,8 @@ with open(IN_PATH) as f:
 COMMANDS = [
     'cptools-run',
     'cptools-companion-server',
-    'cptools-stress-test'
+    'cptools-stress-test',
+    'cptools-make-file'
 ]
 
 for command in COMMANDS:

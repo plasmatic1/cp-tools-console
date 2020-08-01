@@ -3,29 +3,14 @@ import json
 import logging
 import os
 import string
-import sys
-import textwrap
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
-import colorama
-
 from cptools.data import get_option
+from cptools.gen import write_cases_file, try_write_source_file
 from cptools.util import init_common_options, init_common
 
 # Default host ports: https://github.com/jmerle/competitive-companion/blob/master/src/hosts/hosts.ts
 DEFAULT_PORT = 4244  # It's the hightail port but whatever.  I asked jmerle and he said it was fine
-
-# dict of file ext -> comment prefix
-COMMENT_MAP = {
-    '.c': '//',
-    '.cpp': '//',
-    '.cxx': '//',
-    '.cc': '//',
-    '.java': '//',
-
-    '.py': '#',
-    '.rb': '#'
-}
 
 
 # Fixes a problem name
@@ -64,48 +49,10 @@ class RequestHandler(BaseHTTPRequestHandler):
             fname = name + str(ctr)
             ctr += 1
 
-        # Write case file
-        is_linux = sys.platform == 'linux' or sys.platform == 'linux2'
-
-        with open(os.path.join(save_path, fname + '.yml'),
-                  'w') as f:  # Writing cases manually for a bit more flexibility when formatting YAML
-            # Shebang
-            if is_linux:
-                f.write('#!cptools-run\n')
-
-            f.write(f'checker: {get_option("default_checker")}\n')
-            f.write('cases:\n')
-
-            # Number of cases is 0
-            if len(problem['tests']) == 0:
-                problem['tests'].append({'input': 'foo', 'output': 'bar'})  # Any sample sequence
-
-            for case in problem['tests']:
-                inp = case['input'] + ('\n' if case['input'][-1] != '\n' else '')
-                out = case['output'] + ('\n' if case['output'][-1] != '\n' else '')
-
-                f.write('  - in: |\n')
-                f.write(textwrap.indent(inp, ' ' * 6))
-                f.write('    out: |\n')
-                f.write(textwrap.indent(out, ' ' * 6))
-
-        if is_linux:
-            os.chmod(fname + '.yml', 0o777)  # Help
-
-        # Write source file
+        # Write case file and source file
+        write_cases_file(os.path.join(save_path, fname + '.yml'), problem)
         if not args.skip_source_file:
-            if not os.path.exists(get_option('template_path')):
-                logging.warning('Template file does not exist.  Skipping generation of source file')
-            else:
-                with open(os.path.join(save_path, fname + src_lang), 'w') as f:
-                    # Some sort of indicator to denote the associated data file
-                    f.write(f'{COMMENT_MAP[src_lang]} {fname}.yml\n')
-
-                    with open(get_option('template_path')) as ff:
-                        f.write(ff.read().replace('\r', ''))
-
-                if is_linux:
-                    os.chmod(fname + src_lang, 0o777)
+            try_write_source_file(os.path.join(save_path, fname), src_lang)
 
     # Source: https://stackoverflow.com/questions/3389305/how-to-silent-quiet-httpserver-and-basichttprequesthandlers-stderr-output
     # Silences pesky log messages
