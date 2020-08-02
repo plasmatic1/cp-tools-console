@@ -81,7 +81,7 @@ def main():
     init_common_options(args, False)
 
     logging.info('Started Competitive Companion Listener')
-    save_path = os.path.join(os.getcwd(), get_option('saved_files_dir'))
+    save_path = get_option('saved_files_dir')
     logging.info(f'Files will be saved in {save_path}')
 
     port = args.port or DEFAULT_PORT
