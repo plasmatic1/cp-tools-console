@@ -126,7 +126,7 @@ def main():
                 print_stream('Expected Output', case_out)
 
     verdicts = [v + Style.RESET_ALL + Style.BRIGHT for v in verdicts]
-    print(f'Verdicts: [ {" ".join(verdicts)} ]')
+    print(f'\n{Style.BRIGHT}Results: [ {" ".join(verdicts)} ]')
 
     # Cleanup
     exc.cleanup()
