@@ -1,6 +1,7 @@
 import logging
 import sys
 
+import readchar
 import colorama
 import coloredlogs
 import cptools.data as data
@@ -54,7 +55,9 @@ def init_common(parser):
 
 def exit(code=-1):
     if pause_when_done:
-        input('\nPress ENTER to continue...')
+        print('\nPress any key to exit...', end='')
+        sys.stdout.flush()
+        readchar.readkey()
     sys.exit(code)
 
 

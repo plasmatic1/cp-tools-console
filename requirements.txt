@@ -3,3 +3,4 @@ coloredlogs==14.0
 humanfriendly==8.2
 pyreadline==2.1
 PyYAML==5.3.1
+readchar==2.0.1

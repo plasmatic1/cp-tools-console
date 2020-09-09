@@ -88,7 +88,11 @@ class Executor:
 
         if 'compiled' in self.executor_info:
             if os.path.exists(self.exec_file):
-                os.remove(self.exec_file)
+                try:
+                    os.unlink(self.exec_file)
+                except PermissionError as e:
+                    logging.warning(f'Could not remove executable (Error: {e})')
+                    logging.warning('The executable will not be removed (you can remove it manually)')
 
 
 def compile_source_file(src_file, executor=None):
