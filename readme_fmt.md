@@ -1,10 +1,14 @@
 # CP-Tools Console Version
 
-!!! Module has not been published to PyPl !!!
+Note: Module has not been published to PyPl
 
 Run `python3 setup.py develop` to install the module in development mode.
 
 Module has been tested with Python 3.7 on both Windows and Linux based systems.
+
+# Table of Contents
+
+$$$toc$$$
 
 # Introduction
 
@@ -64,11 +68,28 @@ Aliases: `cpm`
 $$$cptools-make-file info$$$
 ```
 
-## Stress Testing
+## `cptools-stress-test`
+Aliases: `cpstress`, `cps`
 
-Automatic stress-testing is also available with the ...
+```
+$$$cptools-stress-test info$$$
+```
 
-TODO
+# Stress Testing
+
+Automatic stress-testing is also available with the `cptools-stress-test` command.  To use it, you'll need a `.yml` file that contains some basic information about the test.  Additionally, running the command `cptools-stress-test --make-file <file name>` will automatically create an info file from the default template, which can easily be modified to your needs.  See below for the default template and more information on the setup.
+
+Finally, to begin a test, simply run the following command: `cptools-stress-test <info file path>`
+
+## Default Stress Testing Info File
+
+```
+$$$default stress test info$$$
+```
+
+## Generator Library
+
+This module also contains some extra libraries for generating data, which can be quite useful when stress-testing.
    
 # Configuration
 
@@ -89,6 +110,8 @@ Executors are defined in a `.cptools/executors.yml` file in the current workspac
 and used.  The default executors file can be seen in the repository under `cptools/local_data/default_executors.yml`.
 
 Note: Leaving `compiled.exe_format` as `{src_name}.exe` still works fine on Linux based systems.
+
+Note 2: By default, the python executor uses `python3` to call the interpreter.
 
 The executor format is as follows:
 
@@ -133,7 +156,7 @@ use the `str.format` method with the following keyword substitutions.
     - Value of the `compiled.exe_format` option after performing substitutions
     - Equal to `src_path` for interpreted languages
 
-## TODO List
+# TODO List
 
 - Retrieving previous results
     - `cptools-view`

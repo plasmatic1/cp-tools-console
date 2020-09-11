@@ -172,7 +172,7 @@ VALIDATORS
 v_int = lambda x: type(x) == int, 'expected int'
 v_float = lambda x: type(x) == float, 'expected float'
 v_str = lambda x: type(x) == str, 'expected string'
-v_exist_file = lambda x: type(x) == str and os.path.exists(x), 'expected existing file path'
+v_exist_file = lambda x: type(x) == str and os.path.exists(x), 'expected file (path specified does not exist)'
 v_dict = lambda x: type(x) == dict, 'expected dict'
 v_list_str = lambda x: type(x) == list and all((type(xx) == str for xx in x)), 'expected list of strings'
 v_list_node = lambda x: type(x) == list and all((type(xx) == dict for xx in x)), 'expected list of dict'

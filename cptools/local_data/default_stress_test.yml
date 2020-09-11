@@ -1,8 +1,27 @@
+# YAML Node info:
+# - gen: Generator program, used to generate input (and also, output)
+# - slow: Reference (slow) solution, used to generate output
+# - fast: The solution to test (fast) solution
+#
+# By default, the case input is generated using the STDOUT of the generator, and the output is generated from the
+# STDOUT of the reference solution after given the case input as the input.  However, if the slow node is not specified,
+# the output is instead the STDERR of the generator process (note that this also means a non-empty STDERR won't be treated
+# as an RTE verdict (non-zero exit code will still trigger an RTE verdict)).
+#
+# Additionally, the case number will be passed as ARGV[1] to both the gen and slow processes when they're run.  This
+# can be used to seed the RNG of those processes.
+
+# Checker used to check solution
 checker: tokens
-executors:  # This node is optional.  The default executor for the file extension will be used if not specified
-  gen: python
-  slow: python
-  fast: python
+
+# Executors
+# This node is optional.  The default executor for the file extension will be used if not specified
+executors:
+  gen: py
+  slow: py
+  fast: py
+
+# Source files
 gen: generate.py
 slow: slow.py
 fast: fast.py

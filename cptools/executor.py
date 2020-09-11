@@ -62,17 +62,18 @@ class Executor:
 
         return elapsed
 
-    def run(self, input, command=None):
+    def run(self, input, command=None, *args):
         """
         Runs the program
         :param input: stdin
         :param command: The command to run (optional and generally only for internals)
+        :param args: Any extra process arguments to specify
         :return: Returns a tuple (CompletedProcess, execution_time, TLE)
         """
 
         start_time = time.time()
         try:
-            res = sub.run(self._sub_placeholder_list(command or self.executor_info['command']), text=True, input=input,
+            res = sub.run(self._sub_placeholder_list(command or self.executor_info['command']) + list(args), text=True, input=input,
                           stdout=sub.PIPE, stderr=sub.PIPE, timeout=float(get_option('timeout')))
             return res, time.time() - start_time, False
         except sub.TimeoutExpired as e:

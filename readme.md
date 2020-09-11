@@ -1,10 +1,31 @@
 # CP-Tools Console Version
 
-!!! Module has not been published to PyPl !!!
+Note: Module has not been published to PyPl
 
 Run `python3 setup.py develop` to install the module in development mode.
 
 Module has been tested with Python 3.7 on both Windows and Linux based systems.
+
+# Table of Contents
+
+- [CP-Tools Console Version](#cp-tools-console-version)
+- [Table of Contents](#table-of-contents)
+- [Introduction](#introduction)
+- [Commands/Scripts](#commandsscripts)
+  - [`cptools-run`](#cptools-run)
+  - [`cptools-companion-server`](#cptools-companion-server)
+  - [`cptools-make-file`](#cptools-make-file)
+  - [`cptools-stress-test`](#cptools-stress-test)
+- [Stress Testing](#stress-testing)
+  - [Default Stress Testing Info File](#default-stress-testing-info-file)
+  - [Generator Library](#generator-library)
+- [Configuration](#configuration)
+  - [Executors](#executors)
+    - [For Compiled Languages](#for-compiled-languages)
+    - [For Interpreted Languages](#for-interpreted-languages)
+    - [Format Substitutions](#format-substitutions)
+- [TODO List](#todo-list)
+
 
 # Introduction
 
@@ -116,17 +137,91 @@ optional arguments:
                         file, with placeholders being used as the input and
                         output (foo and bar respectively)
   -c CHECKER, --checker CHECKER
-                        The checker for the cases file
+                        The checker for the cases file. If not specified, it
+                        defaults to thedefault_checker option in the
+                        config.yml file
   -pwd, --pause-when-done
                         Asks the user to press enter before terminating
   -v, --verbose         Verbose mode: shows DEBUG level log messages
 ```
 
-## Stress Testing
+## `cptools-stress-test`
+Aliases: `cpstress`, `cps`
 
-Automatic stress-testing is also available with the ...
+```
+usage: cptools-stress-test [-h] [-tg] [-cl CASE_LIMIT] [-s SEED]
+                           [-mf MAKE_FILE] [-pwd] [-v]
+                           info_file
 
-TODO
+Stress-tests your solution using a generator and optional reference solution
+
+positional arguments:
+  info_file             YML file containing info for the generator, reference
+                        solution, and solution to be tested
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -tg, --test-generate  Run the generator (and reference solution if
+                        applicable) ONLY (one time) and print the generated
+                        case
+  -cl CASE_LIMIT, --case-limit CASE_LIMIT
+                        Only run CASE_LIMIT cases (normally, the stress-tester
+                        would keep running until manually terminated (i.e.
+                        with Ctrl+C))
+  -s SEED, --seed SEED  By default, the case number supplied when the --test-
+                        generate option is used is 0. By specifying this
+                        option with an integer, that seed will be used instead
+  -mf MAKE_FILE, --make-file MAKE_FILE
+                        Generates an info_file for stress-testing (which can
+                        be configured to your needs). No stress-testing will
+                        actually be done. The path of the file is specified by
+                        MAKE_FILE
+  -pwd, --pause-when-done
+                        Asks the user to press enter before terminating
+  -v, --verbose         Verbose mode: shows DEBUG level log messages
+```
+
+# Stress Testing
+
+Automatic stress-testing is also available with the `cptools-stress-test` command.  To use it, you'll need a `.yml` file that contains some basic information about the test.  Additionally, running the command `cptools-stress-test --make-file <file name>` will automatically create an info file from the default template, which can easily be modified to your needs.  See below for the default template and more information on the setup.
+
+Finally, to begin a test, simply run the following command: `cptools-stress-test <info file path>`
+
+## Default Stress Testing Info File
+
+```
+# YAML Node info:
+# - gen: Generator program, used to generate input (and also, output)
+# - slow: Reference (slow) solution, used to generate output
+# - fast: The solution to test (fast) solution
+#
+# By default, the case input is generated using the STDOUT of the generator, and the output is generated from the
+# STDOUT of the reference solution after given the case input as the input.  However, if the slow node is not specified,
+# the output is instead the STDERR of the generator process (note that this also means a non-empty STDERR won't be treated
+# as an RTE verdict (non-zero exit code will still trigger an RTE verdict)).
+#
+# Additionally, the case number will be passed as ARGV[1] to both the gen and slow processes when they're run.  This
+# can be used to seed the RNG of those processes.
+
+# Checker used to check solution
+checker: tokens
+
+# Executors
+# This node is optional.  The default executor for the file extension will be used if not specified
+executors:
+  gen: py
+  slow: py
+  fast: py
+
+# Source files
+gen: generate.py
+slow: slow.py
+fast: fast.py
+```
+
+## Generator Library
+
+This module also contains some extra libraries for generating data, which can be quite useful when stress-testing.
    
 # Configuration
 
@@ -162,6 +257,8 @@ Executors are defined in a `.cptools/executors.yml` file in the current workspac
 and used.  The default executors file can be seen in the repository under `cptools/local_data/default_executors.yml`.
 
 Note: Leaving `compiled.exe_format` as `{src_name}.exe` still works fine on Linux based systems.
+
+Note 2: By default, the python executor uses `python3` to call the interpreter.
 
 The executor format is as follows:
 
@@ -206,7 +303,7 @@ use the `str.format` method with the following keyword substitutions.
     - Value of the `compiled.exe_format` option after performing substitutions
     - Equal to `src_path` for interpreted languages
 
-## TODO List
+# TODO List
 
 - Retrieving previous results
     - `cptools-view`
@@ -216,4 +313,3 @@ use the `str.format` method with the following keyword substitutions.
             - `-c --clear`: Clear previous results
             - `-i --id <id>`: ID
 - Allowing both user-wide and local configuration
-- Finish stress testing things q:
