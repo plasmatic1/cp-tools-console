@@ -8,8 +8,7 @@ from cptools.gen import write_cases_file, try_write_source_file
 
 parser = argparse.ArgumentParser(description='Autogenerate test case (YML), source files, and stress-testing config'
                                              'files')
-parser.add_argument('file_name', type=str, help='File name of the YML file to generate.  Note that this should '
-                                                      'not include the file extension')
+parser.add_argument('file_name', type=str, help='File name (without extension) of the YML file to generate.')
 parser.add_argument('-ms', '--make-source', help='Also generate a source file from the template file path specified in '
                                                  'the config.  Note that the extension of the source file will be the'
                                                  'same as that of the template',
@@ -23,7 +22,9 @@ parser.add_argument('-c', '--checker', help='The checker for the cases file.  If
                                             type=str, default=get_option('default_checker'))
 
 parser.add_argument('-S', '--stress-test', help='Instead of generating test case and source files, it creates a stress'
-                                                '-testing config file instead')
+                                                '-testing config file instead.  Specify the name of the file (without '
+                                                'xtension) in the file_name argument',
+                                            action='store_true')
 
 
 def main():
@@ -32,10 +33,10 @@ def main():
     common.init_common_options(args, False)
 
     if args.stress_test:
-        if args.make_file:
-            logging.info(f'Making info file {args.make_file}...')
-            with open(args.make_file, 'w') as f:
-                f.write(data.get_default_stress_test_file())
+        args.file_name += '.yml'
+        logging.info(f'Making info file {args.file_name}...')
+        with open(args.file_name, 'w') as f:
+            f.write(data.get_default_stress_test_file())
     else:
         tests_obj = {'tests': [{'input': 'foo', 'output': 'bar'} for _ in range(args.case_count)]}
         write_cases_file(args.file_name + '.yml', tests_obj, args.checker)
