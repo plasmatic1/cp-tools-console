@@ -7,7 +7,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 
 from cptools.data import get_option
 from cptools.gen import write_cases_file, try_write_source_file
-from cptools.util import init_common_options, init_common
+from cptools.common import init_common_options, init_common
 
 # Default host ports: https://github.com/jmerle/competitive-companion/blob/master/src/hosts/hosts.ts
 DEFAULT_PORT = 4244  # It's the hightail port but whatever.  I asked jmerle and he said it was fine

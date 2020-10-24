@@ -1,12 +1,14 @@
 import logging
 import os.path as path
 import argparse
-import cptools.util as cptools_util
+import cptools.common as common
+import cptools.data as data
 from cptools.data import get_option
 from cptools.gen import write_cases_file, try_write_source_file
 
-parser = argparse.ArgumentParser(description='Autogenerate test case (YML) and source files')
-parser.add_argument('cases_file_name', type=str, help='File name of the YML file to generate.  Note that this should '
+parser = argparse.ArgumentParser(description='Autogenerate test case (YML), source files, and stress-testing config'
+                                             'files')
+parser.add_argument('file_name', type=str, help='File name of the YML file to generate.  Note that this should '
                                                       'not include the file extension')
 parser.add_argument('-ms', '--make-source', help='Also generate a source file from the template file path specified in '
                                                  'the config.  Note that the extension of the source file will be the'
@@ -20,17 +22,26 @@ parser.add_argument('-c', '--checker', help='The checker for the cases file.  If
                                             'default_checker option in the config.yml file',
                                             type=str, default=get_option('default_checker'))
 
+parser.add_argument('-S', '--stress-test', help='Instead of generating test case and source files, it creates a stress'
+                                                '-testing config file instead')
+
 
 def main():
-    cptools_util.init_common(parser)
+    common.init_common(parser)
     args = parser.parse_args()
-    cptools_util.init_common_options(args, False)
+    common.init_common_options(args, False)
 
-    tests_obj = {'tests': [{'input': 'foo', 'output': 'bar'} for _ in range(args.case_count)]}
-    write_cases_file(args.cases_file_name + '.yml', tests_obj, args.checker)
-    logging.info(f'Generating cases file {args.cases_file_name}.yml with {args.case_count} sample cases and checker "{args.checker}"')
-    if args.make_source:
-        fname = args.cases_file_name
-        ext = path.splitext(get_option('template_path'))[1]
-        logging.info(f'Generating source file {fname}{ext}')
-        try_write_source_file(fname, ext)
+    if args.stress_test:
+        if args.make_file:
+            logging.info(f'Making info file {args.make_file}...')
+            with open(args.make_file, 'w') as f:
+                f.write(data.get_default_stress_test_file())
+    else:
+        tests_obj = {'tests': [{'input': 'foo', 'output': 'bar'} for _ in range(args.case_count)]}
+        write_cases_file(args.file_name + '.yml', tests_obj, args.checker)
+        logging.info(f'Generating cases file {args.file_name}.yml with {args.case_count} sample cases and checker "{args.checker}"')
+        if args.make_source:
+            fname = args.file_name
+            ext = path.splitext(get_option('template_path'))[1]
+            logging.info(f'Generating source file {fname}{ext}')
+            try_write_source_file(fname, ext)

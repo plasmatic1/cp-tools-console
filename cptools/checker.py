@@ -1,7 +1,7 @@
 import logging
 
 import cptools.data as data
-import cptools.util as util
+import cptools.common as common
 from cptools.executor import Executor, default_executor_name
 
 
@@ -58,7 +58,7 @@ class CustomChecker(Checker):
         self.exc.setup()
         if not self.exc.setup_passed:
             logging.error('Checker compile failed!')
-            util.exit()
+            common.exit()
 
     def _check(self, input, expected, output):
         res, _, tle = self.exc.run('', self.exc.executor_info['command'] + [input, expected, output])
@@ -70,12 +70,12 @@ class CustomChecker(Checker):
         if tle:
             log_case()
             logging.error(f'Checker timed out')
-            util.exit()
+            common.exit()
         elif res.returncode or res.stderr:
             log_case()
             logging.error(f'Checker encountered runtime error (exit code: {res.returncode})')
             logging.error(f'STDERR info: {res.stderr}')
-            util.exit()
+            common.exit()
 
         res.stdout = res.stdout.strip()
         if res.stdout != 'OK':
@@ -102,6 +102,6 @@ def parse_checker(checker_str):
     if c_type not in CHECKERS:
         logging.error(f'Invalid checker type {c_type}')
         logging.error(f'Must be one of the following: {CHECKERS.keys()}')
-        util.exit()
+        common.exit()
 
     return CHECKERS[c_type](c_arg)

@@ -77,7 +77,7 @@ $$$cptools-stress-test info$$$
 
 # Stress Testing
 
-Automatic stress-testing is also available with the `cptools-stress-test` command.  To use it, you'll need a `.yml` file that contains some basic information about the test.  Additionally, running the command `cptools-stress-test --make-file <file name>` will automatically create an info file from the default template, which can easily be modified to your needs.  See below for the default template and more information on the setup.
+Automatic stress-testing is also available with the `cptools-stress-test` command.  To use it, you'll need a `.yml` file that contains some basic information about the test.  Additionally, running the command `cptools-make-file --stress-test <file name>` will automatically create an info file from the default template, which can easily be modified to your needs.  See below for the default template and more information on the setup.
 
 Finally, to begin a test, simply run the following command: `cptools-stress-test <info file path>`
 
@@ -87,9 +87,11 @@ Finally, to begin a test, simply run the following command: `cptools-stress-test
 $$$default stress test info$$$
 ```
 
-## Generator Library
+## Generator Library/Utils [WIP]
 
-This module also contains some extra libraries for generating data, which can be quite useful when stress-testing.
+Note: Python Only
+
+This module also contains libraries for generating data, which can be useful when stress-testing.
    
 # Configuration
 

@@ -2,7 +2,7 @@ import logging
 import time
 import os
 import subprocess as sub
-import cptools.util as cptools_util
+import cptools.common as common
 
 from cptools.data import get_option, get_executors, get_executor
 
@@ -114,11 +114,11 @@ def compile_source_file(src_file, executor=None):
         exc = Executor(src_file, get_executor(exc_name))
     except ValueError as e:
         logging.error(e)
-        cptools_util.exit()
+        common.exit()
 
     if not os.path.exists(src_file):
         logging.error('Source file does not exist!')
-        cptools_util.exit()
+        common.exit()
 
     if exc.is_compiled():
         logging.debug(f'Compile command: {exc.compile_command}')
@@ -129,6 +129,6 @@ def compile_source_file(src_file, executor=None):
 
     if not exc.setup_passed:
         logging.error('Compile failed!')
-        cptools_util.exit()
+        common.exit()
 
     return exc

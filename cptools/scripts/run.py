@@ -6,7 +6,7 @@ import yaml
 from colorama import Style, Fore
 
 import cptools.data as data
-import cptools.util as cptools_util
+import cptools.common as common
 from cptools.checker import parse_checker
 from cptools.executor import Executor, default_executor_name, compile_source_file
 
@@ -21,9 +21,9 @@ parser.add_argument('-o', '--only-case', help='Only run a single case', type=int
 
 
 def main():
-    cptools_util.init_common(parser)
+    common.init_common(parser)
     args = parser.parse_args()
-    cptools_util.init_common_options(args, True)
+    common.init_common_options(args, True)
 
     cfg = data.get_config()
 
@@ -39,7 +39,7 @@ def main():
 
     if not os.path.exists(args.data_file):
         logging.error('Data file does not exist!')
-        cptools_util.exit()
+        common.exit()
 
     try:
         with open(args.data_file) as f:
@@ -47,7 +47,7 @@ def main():
             msg = data.validate_data_object(tests)
             if msg:
                 logging.error(f'Error while parsing data: {msg}')
-                cptools_util.exit()
+                common.exit()
 
             cases = tests['cases']
             for i in range(len(cases)):
@@ -57,7 +57,7 @@ def main():
                     cases[i]['out'] += '\n'
     except KeyError or IndexError:
         logging.error(f'Malformed test data. {Fore.RED}', exc_info=True)
-        cptools_util.exit()
+        common.exit()
 
     # Checker
     checker = parse_checker(tests['checker'])
@@ -67,7 +67,7 @@ def main():
     if args.only_case is not None:
         if args.only_case >= len(cases):
             logging.error('Case index out of range!')
-            cptools_util.exit()
+            common.exit()
         cases = [cases[args.only_case]]
         logging.warning(f'Only running case #{args.only_case}')
 
@@ -84,10 +84,10 @@ def main():
             res, elapsed, tle = exc.run(case_in)
         except UnicodeEncodeError:
             logging.error('Invalid character in Input', exc_info=True)
-            cptools_util.exit()
+            common.exit()
         except UnicodeDecodeError:
             logging.error('Invalid character in Output/Error Stream', exc_info=True)
-            cptools_util.exit()
+            common.exit()
 
         def print_verdict(verdict, verdict_clr, is_timeout=False, extra=''):
             elapsed_str = f'[>{timeout:.3f}s]' if is_timeout else f'[{elapsed:.3f}s]'
@@ -116,7 +116,7 @@ def main():
 
         if not ac or args.list_all:
             def print_stream(label, text, style_before='', style_after=Style.RESET_ALL):
-                print(f'== {label} ==\n{style_before}{cptools_util.truncate(text, char_limit)}{style_after}')
+                print(f'== {label} ==\n{style_before}{common.truncate(text, char_limit)}{style_after}')
 
             if res.stderr:
                 print_stream('Errors', res.stderr, Fore.LIGHTRED_EX)
@@ -130,4 +130,4 @@ def main():
 
     # Cleanup
     exc.cleanup()
-    cptools_util.exit(0)
+    common.exit(0)

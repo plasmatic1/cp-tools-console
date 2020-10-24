@@ -18,7 +18,7 @@ Module has been tested with Python 3.7 on both Windows and Linux based systems.
   - [`cptools-stress-test`](#cptools-stress-test)
 - [Stress Testing](#stress-testing)
   - [Default Stress Testing Info File](#default-stress-testing-info-file)
-  - [Generator Library](#generator-library)
+  - [Generator Library/Utils \[WIP\]](#generator-libraryutils-wip)
 - [Configuration](#configuration)
   - [Executors](#executors)
     - [For Compiled Languages](#for-compiled-languages)
@@ -117,13 +117,14 @@ optional arguments:
 Aliases: `cpm`
 
 ```
-usage: cptools-make-file [-h] [-ms] [-cc CASE_COUNT] [-c CHECKER] [-pwd] [-v]
-                         cases_file_name
+usage: cptools-make-file [-h] [-ms] [-cc CASE_COUNT] [-c CHECKER]
+                         [-S STRESS_TEST] [-pwd] [-v]
+                         file_name
 
-Autogenerate test case (YML) and source files
+Autogenerate test case (YML), source files, and stress-testing configfiles
 
 positional arguments:
-  cases_file_name       File name of the YML file to generate. Note that this
+  file_name             File name of the YML file to generate. Note that this
                         should not include the file extension
 
 optional arguments:
@@ -140,6 +141,9 @@ optional arguments:
                         The checker for the cases file. If not specified, it
                         defaults to thedefault_checker option in the
                         config.yml file
+  -S STRESS_TEST, --stress-test STRESS_TEST
+                        Instead of generating test case and source files, it
+                        creates a stress-testing config file instead
   -pwd, --pause-when-done
                         Asks the user to press enter before terminating
   -v, --verbose         Verbose mode: shows DEBUG level log messages
@@ -149,14 +153,13 @@ optional arguments:
 Aliases: `cpstress`, `cps`
 
 ```
-usage: cptools-stress-test [-h] [-tg] [-cl CASE_LIMIT] [-s SEED]
-                           [-mf MAKE_FILE] [-pwd] [-v]
-                           info_file
+usage: cptools-stress-test [-h] [-tg] [-cl CASE_LIMIT] [-s SEED] [-pwd] [-v]
+                           config_file
 
 Stress-tests your solution using a generator and optional reference solution
 
 positional arguments:
-  info_file             YML file containing info for the generator, reference
+  config_file           YML file containing info for the generator, reference
                         solution, and solution to be tested
 
 optional arguments:
@@ -171,11 +174,6 @@ optional arguments:
   -s SEED, --seed SEED  By default, the case number supplied when the --test-
                         generate option is used is 0. By specifying this
                         option with an integer, that seed will be used instead
-  -mf MAKE_FILE, --make-file MAKE_FILE
-                        Generates an info_file for stress-testing (which can
-                        be configured to your needs). No stress-testing will
-                        actually be done. The path of the file is specified by
-                        MAKE_FILE
   -pwd, --pause-when-done
                         Asks the user to press enter before terminating
   -v, --verbose         Verbose mode: shows DEBUG level log messages
@@ -183,7 +181,7 @@ optional arguments:
 
 # Stress Testing
 
-Automatic stress-testing is also available with the `cptools-stress-test` command.  To use it, you'll need a `.yml` file that contains some basic information about the test.  Additionally, running the command `cptools-stress-test --make-file <file name>` will automatically create an info file from the default template, which can easily be modified to your needs.  See below for the default template and more information on the setup.
+Automatic stress-testing is also available with the `cptools-stress-test` command.  To use it, you'll need a `.yml` file that contains some basic information about the test.  Additionally, running the command `cptools-make-file --stress-test <file name>` will automatically create an info file from the default template, which can easily be modified to your needs.  See below for the default template and more information on the setup.
 
 Finally, to begin a test, simply run the following command: `cptools-stress-test <info file path>`
 
@@ -219,9 +217,11 @@ slow: slow.py
 fast: fast.py
 ```
 
-## Generator Library
+## Generator Library/Utils [WIP]
 
-This module also contains some extra libraries for generating data, which can be quite useful when stress-testing.
+Note: Python Only
+
+This module also contains libraries for generating data, which can be useful when stress-testing.
    
 # Configuration
 
