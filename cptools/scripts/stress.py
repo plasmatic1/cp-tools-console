@@ -17,10 +17,10 @@ parser = argparse.ArgumentParser(description='Stress-tests your solution using a
 
 parser.add_argument('config_file', type=str, help='YML file containing info for the generator, reference solution, and '
                                                 'solution to be tested')
-parser.add_argument('-tg', '--test-generate', help='Run the generator (and reference solution if applicable) ONLY (one '
+parser.add_argument('-T', '--test-generate', help='Run the generator (and reference solution if applicable) ONLY (one '
                                                    'time) and print the generated case',
                         action='store_true')
-parser.add_argument('-cl', '--case-limit', help='Only run CASE_LIMIT cases (normally, the stress-tester would keep '
+parser.add_argument('-l', '--case-limit', help='Only run CASE_LIMIT cases (normally, the stress-tester would keep '
                                                 'running until manually terminated (i.e. with Ctrl+C))', type=int, default=-1)
 parser.add_argument('-s', '--seed', help='By default, the case number supplied when the --test-generate option is used '
                                          'is 0.  By specifying this option with an integer, that seed will be used '

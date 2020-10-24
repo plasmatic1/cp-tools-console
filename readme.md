@@ -117,15 +117,15 @@ optional arguments:
 Aliases: `cpm`
 
 ```
-usage: cptools-make-file [-h] [-ms] [-cc CASE_COUNT] [-c CHECKER]
-                         [-S STRESS_TEST] [-pwd] [-v]
+usage: cptools-make-file [-h] [-ms] [-cc CASE_COUNT] [-c CHECKER] [-S] [-pwd]
+                         [-v]
                          file_name
 
 Autogenerate test case (YML), source files, and stress-testing configfiles
 
 positional arguments:
-  file_name             File name of the YML file to generate. Note that this
-                        should not include the file extension
+  file_name             File name (without extension) of the YML file to
+                        generate.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -141,9 +141,10 @@ optional arguments:
                         The checker for the cases file. If not specified, it
                         defaults to thedefault_checker option in the
                         config.yml file
-  -S STRESS_TEST, --stress-test STRESS_TEST
-                        Instead of generating test case and source files, it
-                        creates a stress-testing config file instead
+  -S, --stress-test     Instead of generating test case and source files, it
+                        creates a stress-testing config file instead. Specify
+                        the name of the file (without xtension) in the
+                        file_name argument
   -pwd, --pause-when-done
                         Asks the user to press enter before terminating
   -v, --verbose         Verbose mode: shows DEBUG level log messages
@@ -153,7 +154,7 @@ optional arguments:
 Aliases: `cpstress`, `cps`
 
 ```
-usage: cptools-stress-test [-h] [-tg] [-cl CASE_LIMIT] [-s SEED] [-pwd] [-v]
+usage: cptools-stress-test [-h] [-T] [-l CASE_LIMIT] [-s SEED] [-pwd] [-v]
                            config_file
 
 Stress-tests your solution using a generator and optional reference solution
@@ -164,10 +165,10 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -tg, --test-generate  Run the generator (and reference solution if
+  -T, --test-generate   Run the generator (and reference solution if
                         applicable) ONLY (one time) and print the generated
                         case
-  -cl CASE_LIMIT, --case-limit CASE_LIMIT
+  -l CASE_LIMIT, --case-limit CASE_LIMIT
                         Only run CASE_LIMIT cases (normally, the stress-tester
                         would keep running until manually terminated (i.e.
                         with Ctrl+C))
