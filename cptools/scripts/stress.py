@@ -142,7 +142,8 @@ def main():
             else:
                 print(f'\n{Style.BRIGHT}Case {i}: {Fore.RED}WA{Style.RESET_ALL} (generator seed {i}){Style.RESET_ALL}\n\n'
                       f'Process Output:\n'
-                      f'{proc_out.stdout}')
+                      f'{proc_out.stdout}\n'
+                      f'Checker Feedback: {feedback}\n')
                 print_case_info()
                 common.exit(0)
 

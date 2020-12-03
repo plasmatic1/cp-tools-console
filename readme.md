@@ -314,3 +314,7 @@ use the `str.format` method with the following keyword substitutions.
             - `-c --clear`: Clear previous results
             - `-i --id <id>`: ID
 - Allowing both user-wide and local configuration
+- Library stuff to support custom checkers/generators/etc.
+    - A way to quickly return input/output/expected and parse by line
+    - Better way to give feedback, etc. (and give feedback on AC as well)
+- Maybe add newline to end of output if it doens't have one (and have a warning somewhere for it)

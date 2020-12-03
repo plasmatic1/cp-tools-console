@@ -130,4 +130,5 @@ def main():
 
     # Cleanup
     exc.cleanup()
+    checker.cleanup()
     common.exit(0)
