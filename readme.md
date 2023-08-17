@@ -1,6 +1,6 @@
 # CP-Tools Console Version
 
-Note: Module has not been published to PyPl
+**Link to old VSCode extension version: (plasmatic1/Competitive-Programming-Tools)[https://github.com/plasmatic1/competitive-programming-tools]**
 
 Run `python3 setup.py develop` to install the module in development mode.
 
