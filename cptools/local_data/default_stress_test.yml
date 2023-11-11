@@ -16,10 +16,10 @@ checker: tokens
 
 # Executors
 # This node is optional.  The default executor for the file extension will be used if not specified
-executors:
-  gen: py
-  slow: py
-  fast: py
+# executors:
+#   gen: py
+#   slow: py
+#   fast: py
 
 # Source files
 gen: generate.py
