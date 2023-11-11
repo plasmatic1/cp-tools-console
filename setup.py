@@ -24,7 +24,7 @@ setup(
     name='cp-tools-console',
     version='1.0.0',
     install_requires=install_requires,
-    python_requires='>=3.7',
+    python_requires='>=3.9',
     packages=setuptools.find_packages('cptools.*', exclude='cptools.tests.*'),
     url='',
     license='GPL 3.0',

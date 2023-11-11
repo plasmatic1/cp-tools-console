@@ -36,10 +36,16 @@ def write_cases_file(path, problem, checker=get_option("default_checker")):
             inp = case['input'] + ('\n' if case['input'][-1] != '\n' else '')
             out = case['output'] + ('\n' if case['output'][-1] != '\n' else '')
 
-            f.write('  - in: |\n')
-            f.write(textwrap.indent(inp, ' ' * 6))
-            f.write('    out: |\n')
-            f.write(textwrap.indent(out, ' ' * 6))
+            if len(inp) > 0:
+                f.write('  - in: |\n')
+                f.write(textwrap.indent(inp, ' ' * 6))
+            else:
+                f.write('  - in: ""\n')
+            if len(out) > 0:
+                f.write('    out: |\n')
+                f.write(textwrap.indent(out, ' ' * 6))
+            else:
+                f.write('    out: ""\n')
     if is_linux:
         os.chmod(path, 0o777)  # Help
         logging.debug('Linux machine detected: adding executable permission to cases file...')

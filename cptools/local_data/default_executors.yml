@@ -1,13 +1,13 @@
 cpp:
   ext: ['cpp', 'cxx', 'cc']
   compiled:
-    command: ['g++', '-O0', '-DLOCAL', '-o', '{exe_path}', '{src_path}']
+    command: ['g++', '-Wall', '-Wextra', '-Werror', '-DLOCAL', '-o', '{exe_path}', '{src_path}']
     exe_format: '{src_name}.exe'
   command: ['./{exe_path}']
 cpp-fast:
   ext: ['cpp', 'cxx', 'cc']
   compiled:
-    command: ['g++', '-O2', '-DLOCAL', '-o', '{exe_path}', '{src_path}']
+    command: ['g++', '-Wall', '-Wextra', '-O2', '-DLOCAL', '-o', '{exe_path}', '{src_path}']
     exe_format: '{src_name}.exe'
   command: ['./{exe_path}']
 cpp-debug:
